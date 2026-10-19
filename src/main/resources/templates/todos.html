@@ -12,6 +12,24 @@
         <h1 class="page-title">やること一覧</h1>
         <p class="flash" th:if="${message}" th:text="${message}"></p>
         <p><a class="link" href="/todos/new">新規登録</a></p>
+        <form class="search-bar" action="/todos" method="get">
+            <input type="hidden" name="order" th:value="${order}">
+            <label>やることの名前
+                <input class="form-input" type="text" name="keyword" th:value="${keyword}">
+            </label>
+            <label>ジャンル
+                <select class="form-input" name="category">
+                    <option value="すべて" th:selected="${category == 'すべて'}">すべて</option>
+                    <option th:each="item : ${categories}" th:value="${item}" th:text="${item}"
+                        th:selected="${category == item}"></option>
+                </select>
+            </label>
+            <button class="btn" type="submit">絞り込む</button>
+        </form>
+        <p>
+            <a class="link" th:href="@{/todos(keyword=${keyword}, category=${category}, order='asc')}">期限が近い順</a>
+            <a class="link" th:href="@{/todos(keyword=${keyword}, category=${category}, order='desc')}">期限が遠い順</a>
+        </p>
         <p th:if="${#lists.isEmpty(todos)}">まだ1件も登録されていません</p>
         <table class="todo-table" th:unless="${#lists.isEmpty(todos)}">
             <thead>

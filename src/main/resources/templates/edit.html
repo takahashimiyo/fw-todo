@@ -12,9 +12,9 @@
         <h1 class="page-title">やること編集</h1>
         <form th:action="@{/todos/{id}/confirm(id=${todo.id})}" method="post" th:object="${todo}">
             <div class="form-row"><label class="form-label" for="title">やること</label><input class="form-input"
-                    type="text" id="title" th:field="*{title}"></div>
+                    type="text" id="title" th:field="*{title}"><p class="error" th:errors="*{title}"></p></div>
             <div class="form-row"><label class="form-label" for="detail">メモ</label><input class="form-input" type="text"
-                    id="detail" th:field="*{detail}"></div>
+                    id="detail" th:field="*{detail}"><p class="error" th:errors="*{detail}"></p></div>
             <div class="form-row">
                 <label class="form-label" for="category">ジャンル</label>
                 <select class="form-input" id="category" th:field="*{category}">
@@ -25,6 +25,7 @@
                     <option value="資格">資格</option>
                     <option value="就職活動">就職活動</option>
                 </select>
+                <p class="error" th:errors="*{category}"></p>
             </div>
             <div class="form-row">
                 <label class="form-label" for="priority">優先度</label>
@@ -34,6 +35,7 @@
                     <option value="2">中</option>
                     <option value="3">低</option>
                 </select>
+                <p class="error" th:errors="*{priority}"></p>
             </div>
             <div class="form-row"><label class="form-label" for="dueDate">期限</label><input class="form-input"
                     type="date" id="dueDate" th:field="*{dueDate}"></div>

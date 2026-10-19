@@ -1,11 +1,14 @@
-﻿package com.example.todoapp;
+package com.example.todoapp;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -24,8 +27,17 @@ public class HomeController {
     }
 
     @GetMapping("/todos")
-    public String todos(Model model) {
-        model.addAttribute("todos", todoMapper.findAll());
+    public String todos(@RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "すべて") String category,
+            @RequestParam(defaultValue = "asc") String order, Model model) {
+        if (!"asc".equals(order) && !"desc".equals(order)) {
+            order = "asc";
+        }
+        model.addAttribute("todos", todoMapper.search(keyword, "すべて".equals(category) ? "" : category, order));
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("category", category);
+        model.addAttribute("order", order);
+        model.addAttribute("categories", new String[] { "デザイン", "マーケティング", "プログラミング", "資格", "就職活動" });
         return "todos";
     }
 
@@ -36,7 +48,10 @@ public class HomeController {
     }
 
     @PostMapping("/todos/confirm")
-    public String confirmCreate(@ModelAttribute Todo todo, Model model) {
+    public String confirmCreate(@Validated @ModelAttribute Todo todo, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "create";
+        }
         model.addAttribute("todo", todo);
         return "create-confirm";
     }
@@ -66,8 +81,12 @@ public class HomeController {
     }
 
     @PostMapping("/todos/{id}/confirm")
-    public String confirmEdit(@PathVariable Long id, @ModelAttribute Todo todo, Model model) {
+    public String confirmEdit(@PathVariable Long id, @Validated @ModelAttribute Todo todo,
+            BindingResult bindingResult, Model model) {
         todo.setId(id);
+        if (bindingResult.hasErrors()) {
+            return "edit";
+        }
         model.addAttribute("todo", todo);
         return "edit-confirm";
     }
