@@ -1,4 +1,4 @@
-package com.example.todoapp;
+﻿package com.example.todoapp;
 
 import java.util.List;
 
@@ -8,4 +8,11 @@ import org.apache.ibatis.annotations.Mapper;
 public interface TodoMapper {
 
     List<Todo> findAll();
+
+    Todo findById(Long id);
+
+    int insert(Todo todo);
+
+    int update(Todo todo);
 }
+
