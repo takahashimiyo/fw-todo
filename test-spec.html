@@ -1,0 +1,89 @@
+﻿<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>テスト仕様書</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; padding: 12px; color: #222; font-family: sans-serif; font-size: 12px; }
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+h1 { margin: 0; font-size: 18px; }
+button { padding: 6px 12px; cursor: pointer; }
+table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+col:nth-child(1) { width: 5%; } col:nth-child(2) { width: 20%; } col:nth-child(3) { width: 15%; } col:nth-child(4) { width: 25%; } col:nth-child(5) { width: 10%; } col:nth-child(6) { width: 25%; }
+th, td { border: 1px solid #777; padding: 4px; vertical-align: top; overflow-wrap: anywhere; }
+th { background: #eee; text-align: left; }
+.result { white-space: nowrap; }
+.result label { display: inline-flex; align-items: center; gap: 2px; margin-right: 3px; }
+textarea { display: block; width: 100%; min-height: 34px; resize: vertical; font: inherit; padding: 3px; }
+@media print {
+  body { padding: 0; font-size: 9px; }
+  header button { display: none; }
+  h1 { font-size: 14px; }
+  th, td { padding: 3px; }
+  textarea { resize: none; overflow: visible; border: 0; padding: 0; min-height: 0; }
+  tr { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<header><h1>テスト仕様書</h1><button type="button" onclick="window.print()">PDFで保存</button></header>
+<table>
+<colgroup><col><col><col><col><col><col></colgroup>
+<thead><tr><th>番号</th><th>確かめること</th><th>入れる値</th><th>期待する結果</th><th>結果</th><th>備考/NG</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>一覧画面を開く</td><td>http://localhost:8080/todos</td><td>一覧に、登録済みの5件が「やること・ジャンル・優先度・期限・状態・操作」の順で表示される。</td><td class="result"><label><input type="radio" name="result-1" value="OK">OK</label><label><input type="radio" name="result-1" value="NG">NG</label></td><td><textarea aria-label="備考/NG 1"></textarea></td></tr>
+<tr><td>2</td><td>一覧に出す値の表示名</td><td>表示されている優先度と状態</td><td>優先度1・2・3が「高・中・低」、状態1・0が「完了・未完了」と表示される。</td><td class="result"><label><input type="radio" name="result-2" value="OK">OK</label><label><input type="radio" name="result-2" value="NG">NG</label></td><td><textarea aria-label="備考/NG 2"></textarea></td></tr>
+<tr><td>3</td><td>新しいやることを登録画面に入力する</td><td>やること: テスト課題A<br>メモ: 登録確認用<br>ジャンル: プログラミング<br>優先度: 高<br>期限: 2027-01-15</td><td>確認画面に、入力した5項目が入力欄ではなく文字で表示される。</td><td class="result"><label><input type="radio" name="result-3" value="OK">OK</label><label><input type="radio" name="result-3" value="NG">NG</label></td><td><textarea aria-label="備考/NG 3"></textarea></td></tr>
+<tr><td>4</td><td>登録の確認で未入力欄を表示する</td><td>メモ・期限を空欄にする</td><td>確認画面のメモと期限に「（入力なし）」と表示される。</td><td class="result"><label><input type="radio" name="result-4" value="OK">OK</label><label><input type="radio" name="result-4" value="NG">NG</label></td><td><textarea aria-label="備考/NG 4"></textarea></td></tr>
+<tr><td>5</td><td>登録の確認から書き直す</td><td>「書き直す」を押す</td><td>登録画面に戻り、入力した値が入った状態で表示される。</td><td class="result"><label><input type="radio" name="result-5" value="OK">OK</label><label><input type="radio" name="result-5" value="NG">NG</label></td><td><textarea aria-label="備考/NG 5"></textarea></td></tr>
+<tr><td>6</td><td>入力内容を登録する</td><td>テスト課題Aを「登録する」</td><td>一覧に「登録しました」と表示され、テスト課題Aが1件追加される。</td><td class="result"><label><input type="radio" name="result-6" value="OK">OK</label><label><input type="radio" name="result-6" value="NG">NG</label></td><td><textarea aria-label="備考/NG 6"></textarea></td></tr>
+<tr><td>7</td><td>登録画面から一覧へ戻る</td><td>「一覧へ」を押す</td><td>一覧画面が表示される。</td><td class="result"><label><input type="radio" name="result-7" value="OK">OK</label><label><input type="radio" name="result-7" value="NG">NG</label></td><td><textarea aria-label="備考/NG 7"></textarea></td></tr>
+<tr><td>8</td><td>登録画面で必須のやることを空欄にする</td><td>やること: 空欄<br>ジャンル・優先度: 選択する</td><td>登録画面に留まり、やること欄の下に「やることを入力してください」と表示される。</td><td class="result"><label><input type="radio" name="result-8" value="OK">OK</label><label><input type="radio" name="result-8" value="NG">NG</label></td><td><textarea aria-label="備考/NG 8"></textarea></td></tr>
+<tr><td>9</td><td>登録画面でやることを255文字より長くする</td><td>やること: 256文字</td><td>登録画面に留まり、やること欄の下に「やることは255文字以内で入力してください」と表示される。</td><td class="result"><label><input type="radio" name="result-9" value="OK">OK</label><label><input type="radio" name="result-9" value="NG">NG</label></td><td><textarea aria-label="備考/NG 9"></textarea></td></tr>
+<tr><td>10</td><td>登録画面でメモを255文字より長くする</td><td>やること・ジャンル・優先度: 入力/選択<br>メモ: 256文字</td><td>登録画面に留まり、メモ欄の下に「メモは255文字以内で入力してください」と表示される。</td><td class="result"><label><input type="radio" name="result-10" value="OK">OK</label><label><input type="radio" name="result-10" value="NG">NG</label></td><td><textarea aria-label="備考/NG 10"></textarea></td></tr>
+<tr><td>11</td><td>登録画面でジャンルを選ばない</td><td>やることと優先度を入力/選択<br>ジャンル: 未選択</td><td>登録画面に留まり、ジャンル欄の下に「ジャンルを選んでください」と表示される。</td><td class="result"><label><input type="radio" name="result-11" value="OK">OK</label><label><input type="radio" name="result-11" value="NG">NG</label></td><td><textarea aria-label="備考/NG 11"></textarea></td></tr>
+<tr><td>12</td><td>登録画面で優先度を選ばない</td><td>やることとジャンルを入力/選択<br>優先度: 未選択</td><td>登録画面に留まり、優先度欄の下に「優先度を選んでください」と表示される。</td><td class="result"><label><input type="radio" name="result-12" value="OK">OK</label><label><input type="radio" name="result-12" value="NG">NG</label></td><td><textarea aria-label="備考/NG 12"></textarea></td></tr>
+<tr><td>13</td><td>やることに半角空白だけを入力する</td><td>やること: 半角スペースのみ<br>ジャンル・優先度: 選択</td><td>登録画面に留まり、やること欄の下に「やることを入力してください」と表示される。</td><td class="result"><label><input type="radio" name="result-13" value="OK">OK</label><label><input type="radio" name="result-13" value="NG">NG</label></td><td><textarea aria-label="備考/NG 13"></textarea></td></tr>
+<tr><td>14</td><td>やることに全角空白だけを入力する</td><td>やること: 全角スペースのみ<br>ジャンル・優先度: 選択</td><td>登録画面に留まり、やること欄の下に「やることを入力してください」と表示される。</td><td class="result"><label><input type="radio" name="result-14" value="OK">OK</label><label><input type="radio" name="result-14" value="NG">NG</label></td><td><textarea aria-label="備考/NG 14"></textarea></td></tr>
+<tr><td>15</td><td>登録した1件を編集画面で開く</td><td>一覧のテスト課題Aの「編集」</td><td>編集画面に、現在値のやること・メモ・ジャンル・優先度・期限・完了欄が表示される。</td><td class="result"><label><input type="radio" name="result-15" value="OK">OK</label><label><input type="radio" name="result-15" value="NG">NG</label></td><td><textarea aria-label="備考/NG 15"></textarea></td></tr>
+<tr><td>16</td><td>編集画面で内容を変更して確認する</td><td>やること: テスト課題A編集済<br>メモ: 編集確認用<br>ジャンル: 資格<br>優先度: 中<br>期限: 2027-02-15<br>完了: チェックを入れる</td><td>編集の確認画面に、変更した5項目と完了の状態が表示される。</td><td class="result"><label><input type="radio" name="result-16" value="OK">OK</label><label><input type="radio" name="result-16" value="NG">NG</label></td><td><textarea aria-label="備考/NG 16"></textarea></td></tr>
+<tr><td>17</td><td>編集の確認から書き直す</td><td>「書き直す」を押す</td><td>編集画面に戻り、変更した値が入った状態で表示される。</td><td class="result"><label><input type="radio" name="result-17" value="OK">OK</label><label><input type="radio" name="result-17" value="NG">NG</label></td><td><textarea aria-label="備考/NG 17"></textarea></td></tr>
+<tr><td>18</td><td>編集内容を保存する</td><td>編集済み内容を「保存する」</td><td>一覧に「保存しました」と表示され、やることが「テスト課題A編集済」になり、ジャンル・優先度・期限・状態も変更後の値で表示される。</td><td class="result"><label><input type="radio" name="result-18" value="OK">OK</label><label><input type="radio" name="result-18" value="NG">NG</label></td><td><textarea aria-label="備考/NG 18"></textarea></td></tr>
+<tr><td>19</td><td>編集画面で必須のやることを空欄にする</td><td>やること: 空欄<br>ジャンル・優先度: 選択</td><td>編集画面に留まり、やること欄の下に「やることを入力してください」と表示される。</td><td class="result"><label><input type="radio" name="result-19" value="OK">OK</label><label><input type="radio" name="result-19" value="NG">NG</label></td><td><textarea aria-label="備考/NG 19"></textarea></td></tr>
+<tr><td>20</td><td>編集画面でやることを255文字より長くする</td><td>やること: 256文字</td><td>編集画面に留まり、やること欄の下に「やることは255文字以内で入力してください」と表示される。</td><td class="result"><label><input type="radio" name="result-20" value="OK">OK</label><label><input type="radio" name="result-20" value="NG">NG</label></td><td><textarea aria-label="備考/NG 20"></textarea></td></tr>
+<tr><td>21</td><td>編集画面でメモを255文字より長くする</td><td>メモ: 256文字</td><td>編集画面に留まり、メモ欄の下に「メモは255文字以内で入力してください」と表示される。</td><td class="result"><label><input type="radio" name="result-21" value="OK">OK</label><label><input type="radio" name="result-21" value="NG">NG</label></td><td><textarea aria-label="備考/NG 21"></textarea></td></tr>
+<tr><td>22</td><td>編集画面でジャンルを選ばない</td><td>ジャンル: 未選択</td><td>編集画面に留まり、ジャンル欄の下に「ジャンルを選んでください」と表示される。</td><td class="result"><label><input type="radio" name="result-22" value="OK">OK</label><label><input type="radio" name="result-22" value="NG">NG</label></td><td><textarea aria-label="備考/NG 22"></textarea></td></tr>
+<tr><td>23</td><td>編集画面で優先度を選ばない</td><td>優先度: 未選択</td><td>編集画面に留まり、優先度欄の下に「優先度を選んでください」と表示される。</td><td class="result"><label><input type="radio" name="result-23" value="OK">OK</label><label><input type="radio" name="result-23" value="NG">NG</label></td><td><textarea aria-label="備考/NG 23"></textarea></td></tr>
+<tr><td>24</td><td>存在しない番号の編集画面を開く</td><td>/todos/存在しない番号/edit</td><td>一覧に戻り、画面上部に「見つかりませんでした」と表示される。</td><td class="result"><label><input type="radio" name="result-24" value="OK">OK</label><label><input type="radio" name="result-24" value="NG">NG</label></td><td><textarea aria-label="備考/NG 24"></textarea></td></tr>
+<tr><td>25</td><td>名前の一部で一覧を絞り込む</td><td>名前: 課題<br>ジャンル: すべて</td><td>名前に「課題」を含むやることだけが一覧に表示される。</td><td class="result"><label><input type="radio" name="result-25" value="OK">OK</label><label><input type="radio" name="result-25" value="NG">NG</label></td><td><textarea aria-label="備考/NG 25"></textarea></td></tr>
+<tr><td>26</td><td>ジャンルで一覧を絞り込む</td><td>名前: 空欄<br>ジャンル: 資格</td><td>ジャンルが「資格」と完全に一致するやることだけが一覧に表示される。</td><td class="result"><label><input type="radio" name="result-26" value="OK">OK</label><label><input type="radio" name="result-26" value="NG">NG</label></td><td><textarea aria-label="備考/NG 26"></textarea></td></tr>
+<tr><td>27</td><td>名前とジャンルの両方が空のまま絞り込む</td><td>名前: 空欄<br>ジャンル: すべて</td><td>絞り込まれず、登録されているすべてのやることが一覧に表示される。</td><td class="result"><label><input type="radio" name="result-27" value="OK">OK</label><label><input type="radio" name="result-27" value="NG">NG</label></td><td><textarea aria-label="備考/NG 27"></textarea></td></tr>
+<tr><td>28</td><td>絞り込み結果が0件のときの表示</td><td>名前: 該当なしの文字</td><td>一覧に「まだ1件も登録されていません」と表示される。</td><td class="result"><label><input type="radio" name="result-28" value="OK">OK</label><label><input type="radio" name="result-28" value="NG">NG</label></td><td><textarea aria-label="備考/NG 28"></textarea></td></tr>
+<tr><td>29</td><td>名前・ジャンル・並び順をアドレスに付けて絞り込む</td><td>/todos?keyword=課題&amp;category=プログラミング&amp;order=asc</td><td>アドレスに絞り込み語と並び順が表示され、名前に「課題」を含みジャンルが「プログラミング」のやることが期限の近い順で表示される。</td><td class="result"><label><input type="radio" name="result-29" value="OK">OK</label><label><input type="radio" name="result-29" value="NG">NG</label></td><td><textarea aria-label="備考/NG 29"></textarea></td></tr>
+<tr><td>30</td><td>最初に一覧を開いたときの並び順</td><td>/todos を開く</td><td>やることが期限の近い順に表示される。</td><td class="result"><label><input type="radio" name="result-30" value="OK">OK</label><label><input type="radio" name="result-30" value="NG">NG</label></td><td><textarea aria-label="備考/NG 30"></textarea></td></tr>
+<tr><td>31</td><td>期限が近い順に並び替える</td><td>「期限が近い順」のリンク</td><td>一覧のやることが期限の近い順に表示される。</td><td class="result"><label><input type="radio" name="result-31" value="OK">OK</label><label><input type="radio" name="result-31" value="NG">NG</label></td><td><textarea aria-label="備考/NG 31"></textarea></td></tr>
+<tr><td>32</td><td>期限が遠い順に並び替える</td><td>「期限が遠い順」のリンク</td><td>一覧のやることが期限の遠い順に表示される。</td><td class="result"><label><input type="radio" name="result-32" value="OK">OK</label><label><input type="radio" name="result-32" value="NG">NG</label></td><td><textarea aria-label="備考/NG 32"></textarea></td></tr>
+<tr><td>33</td><td>登録したやることの削除確認画面を開く</td><td>一覧の「テスト課題A編集済」の「削除」</td><td>削除確認画面に、その1件のやること・ジャンル・期限が表示され、入力欄は表示されない。</td><td class="result"><label><input type="radio" name="result-33" value="OK">OK</label><label><input type="radio" name="result-33" value="NG">NG</label></td><td><textarea aria-label="備考/NG 33"></textarea></td></tr>
+<tr><td>34</td><td>削除確認で「やめる」を選ぶ</td><td>「やめる」を押す</td><td>一覧画面に戻り、対象のやることが残っている。</td><td class="result"><label><input type="radio" name="result-34" value="OK">OK</label><label><input type="radio" name="result-34" value="NG">NG</label></td><td><textarea aria-label="備考/NG 34"></textarea></td></tr>
+<tr><td>35</td><td>存在しない番号の削除確認画面を開く</td><td>/todos/存在しない番号/delete</td><td>一覧に戻り、画面上部に「見つかりませんでした」と表示される。</td><td class="result"><label><input type="radio" name="result-35" value="OK">OK</label><label><input type="radio" name="result-35" value="NG">NG</label></td><td><textarea aria-label="備考/NG 35"></textarea></td></tr>
+<tr><td>36</td><td>登録したやることを削除する</td><td>一覧の対象の「削除」から「消す」を押す</td><td>一覧に「削除しました」と表示され、対象のやることが一覧から消える。</td><td class="result"><label><input type="radio" name="result-36" value="OK">OK</label><label><input type="radio" name="result-36" value="NG">NG</label></td><td><textarea aria-label="備考/NG 36"></textarea></td></tr>
+<tr><td>37</td><td>最後にテストで増やした行を消し、5行に戻す</td><td>一覧の件数を確認し、テストで追加した行があれば削除する</td><td>一覧に登録済みの行が5件表示され、テストで追加した行が残っていない。</td><td class="result"><label><input type="radio" name="result-37" value="OK">OK</label><label><input type="radio" name="result-37" value="NG">NG</label></td><td><textarea aria-label="備考/NG 37"></textarea></td></tr>
+</tbody>
+</table>
+<script>
+function fitNotes() {
+  document.querySelectorAll('textarea').forEach(area => {
+    area.style.height = 'auto';
+    area.style.height = area.scrollHeight + 'px';
+  });
+}
+window.addEventListener('beforeprint', fitNotes);
+window.addEventListener('afterprint', () => {
+  document.querySelectorAll('textarea').forEach(area => area.style.height = '');
+});
+</script>
+</body>
+</html>
+
