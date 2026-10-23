@@ -1,0 +1,31 @@
+GET http://localhost:8080/api/todos?category=就職活動
+
+### 1. 1件登録する
+POST http://localhost:8080/api/todos
+Content-Type: application/json
+
+{
+  "title": "課題の提出物を確認する",
+  "category": "プログラミング",
+  "priority": 1,
+  "dueDate": "2026-11-01"
+}
+
+### 2. 1件取得する
+GET http://localhost:8080/api/todos/16
+
+### 3. 1件更新する
+PUT http://localhost:8080/api/todos/1
+Content-Type: application/json
+
+{
+  "title": "APIの使い方を確認して練習する",
+  "detail": "各APIの返り値を確認する",
+  "category": "プログラミング",
+  "priority": 2,
+  "dueDate": "2026-11-01",
+  "completed": false
+}
+
+### 4. 1件削除する
+DELETE http://localhost:8080/api/todos/16
