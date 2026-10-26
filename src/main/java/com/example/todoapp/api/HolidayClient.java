@@ -10,7 +10,7 @@ import org.springframework.web.client.RestClient;
 
 public class HolidayClient {
 
-    private static final String HOLIDAYS_URL = "https://holidays-jp.github.invalid/api/v1/date.json";
+    private static final String HOLIDAYS_URL = "https://holidays-jp.github.io/api/v1/date.json";
 
     private final RestClient restClient;
 
