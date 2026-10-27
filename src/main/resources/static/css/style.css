@@ -42,6 +42,11 @@ body {
     font-weight: bold;
 }
 
+.priority-marker {
+    color: red;
+    font-weight: bold;
+}
+
 .todo-table tbody tr[data-overdue="true"] td {
     background: #fee2e2;
 }

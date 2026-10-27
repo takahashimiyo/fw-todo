@@ -47,7 +47,8 @@
                     th:attr="data-overdue=${todo.dueDate != null and todo.dueDate.isBefore(today) and !todo.completed}">
                     <td th:text="${todo.title}"></td>
                     <td th:text="${todo.category}"></td>
-                    <td th:text="${todo.priority == 1 ? '高' : (todo.priority == 2 ? '中' : '低')}"></td>
+                    <td><span th:text="${todo.priority == 1 ? '高' : (todo.priority == 2 ? '中' : '低')}"></span><span
+                            class="priority-marker" th:if="${todo.priority == 1}" aria-label="最優先"> ★</span></td>
                     <td th:text="${todo.dueDate}"></td>
                     <td th:text="${todo.completed ? '完了' : '未完了'}"></td>
                     <td><a class="link" th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a> <a class="link"
