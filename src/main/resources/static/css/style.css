@@ -127,6 +127,16 @@ body {
     text-decoration: underline;
 }
 
+.pagination {
+    display: flex;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.pagination a[aria-current="page"] {
+    font-weight: bold;
+}
+
 .calendar-container {
     max-width: 1000px;
 }

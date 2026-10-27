@@ -30,12 +30,19 @@ public class HomeController {
     public String todos(@RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "すべて") String category,
             @RequestParam(defaultValue = "asc") String order,
-            @RequestParam(defaultValue = "false") boolean showCompleted, Model model) {
+            @RequestParam(defaultValue = "false") boolean showCompleted,
+            @RequestParam(defaultValue = "1") int page, Model model) {
         if (!"asc".equals(order) && !"desc".equals(order)) {
             order = "asc";
         }
-        model.addAttribute("todos", todoService.search(keyword, "すべて".equals(category) ? "" : category, order,
-                showCompleted));
+        page = Math.max(page, 1);
+        String searchCategory = "すべて".equals(category) ? "" : category;
+        long totalItems = todoService.countSearch(keyword, searchCategory, showCompleted);
+        int totalPages = (int) Math.max(1, (totalItems + 9) / 10);
+        page = Math.min(page, totalPages);
+        model.addAttribute("todos", todoService.search(keyword, searchCategory, order, showCompleted, page, 10));
+        model.addAttribute("page", page);
+        model.addAttribute("totalPages", totalPages);
         model.addAttribute("today", java.time.LocalDate.now());
         model.addAttribute("keyword", keyword);
         model.addAttribute("category", category);

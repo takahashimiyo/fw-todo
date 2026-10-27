@@ -18,7 +18,7 @@ public class TodoService {
     }
 
     public List<Todo> search(String keyword, String category, String order, LocalDate from, LocalDate to) {
-        return todoMapper.search(keyword, category, order, from, to, true);
+        return todoMapper.search(keyword, category, order, from, to, true, Integer.MAX_VALUE, 0);
     }
 
     public List<Todo> search(String keyword, String category, String order) {
@@ -26,7 +26,17 @@ public class TodoService {
     }
 
     public List<Todo> search(String keyword, String category, String order, boolean showCompleted) {
-        return todoMapper.search(keyword, category, order, null, null, showCompleted);
+        return search(keyword, category, order, showCompleted, 1, 10);
+    }
+
+    public List<Todo> search(String keyword, String category, String order, boolean showCompleted,
+            int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        return todoMapper.search(keyword, category, order, null, null, showCompleted, pageSize, offset);
+    }
+
+    public long countSearch(String keyword, String category, boolean showCompleted) {
+        return todoMapper.countSearch(keyword, category, null, null, showCompleted);
     }
 
     public Todo findById(Long id) {
