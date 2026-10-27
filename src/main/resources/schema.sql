@@ -6,13 +6,14 @@ CREATE TABLE IF NOT EXISTS todos (
     priority INT NOT NULL DEFAULT 2,
     due_date DATE NULL,
     completed BOOLEAN NOT NULL DEFAULT FALSE,
+    completed_at DATETIME NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 ) CHARACTER SET utf8mb4;
 
-INSERT INTO todos (title, category, priority, completed)
-SELECT 'todo-06', 'プログラミング', 2, FALSE
+INSERT INTO todos (title, category, priority, completed, completed_at)
+SELECT 'todo-06', 'プログラミング', 2, TRUE, '2026-04-05 00:00:00'
 WHERE NOT EXISTS (SELECT 1 FROM todos WHERE title = 'todo-06');
 INSERT INTO todos (title, category, priority, completed)
 SELECT 'todo-07', 'プログラミング', 2, FALSE

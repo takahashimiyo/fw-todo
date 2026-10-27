@@ -1,6 +1,7 @@
 package com.example.todoapp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -50,6 +51,16 @@ public class TodoService {
     }
 
     public int update(Todo todo) {
+        Todo existing = todoMapper.findById(todo.getId());
+        if (existing != null) {
+            if (!Boolean.TRUE.equals(existing.getCompleted()) && Boolean.TRUE.equals(todo.getCompleted())) {
+                todo.setCompletedAt(LocalDateTime.now());
+            } else if (Boolean.TRUE.equals(existing.getCompleted()) && !Boolean.TRUE.equals(todo.getCompleted())) {
+                todo.setCompletedAt(null);
+            } else {
+                todo.setCompletedAt(existing.getCompletedAt());
+            }
+        }
         int result = todoMapper.update(todo);
         log.info("Todo edit completed");
         return result;
