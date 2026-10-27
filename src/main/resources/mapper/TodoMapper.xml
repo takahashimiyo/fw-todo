@@ -2,9 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.todoapp.TodoMapper">
     <select id="search" resultType="com.example.todoapp.Todo">
-        SELECT id, title, detail, category, priority, due_date, completed, completed_at, created_at, updated_at
+        SELECT id, title, detail, category, priority, due_date, completed, completed_at, deleted_at, created_at, updated_at
         FROM todos
         <where>
+            <choose>
+                <when test="trash">AND deleted_at IS NOT NULL</when>
+                <otherwise>AND deleted_at IS NULL</otherwise>
+            </choose>
             <if test="keyword != null and keyword != ''">
                 AND title LIKE CONCAT('%', #{keyword}, '%')
             </if>
@@ -31,6 +35,7 @@
     <select id="countSearch" resultType="long">
         SELECT COUNT(*) FROM todos
         <where>
+            AND deleted_at IS NULL
             <if test="keyword != null and keyword != ''">
                 AND title LIKE CONCAT('%', #{keyword}, '%')
             </if>
@@ -48,10 +53,28 @@
             </if>
         </where>
     </select>
+    <select id="countSearchInTrash" resultType="long">
+        SELECT COUNT(*) FROM todos
+        <where>
+            <choose>
+                <when test="trash">AND deleted_at IS NOT NULL</when>
+                <otherwise>AND deleted_at IS NULL</otherwise>
+            </choose>
+            <if test="keyword != null and keyword != ''">
+                AND title LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="category != null and category != ''">
+                AND category = #{category}
+            </if>
+            <if test="!showCompleted">
+                AND completed = FALSE
+            </if>
+        </where>
+    </select>
     <select id="findById" parameterType="long" resultType="com.example.todoapp.Todo">
-        SELECT id, title, detail, category, priority, due_date AS dueDate, completed, completed_at AS completedAt, created_at AS createdAt, updated_at AS updatedAt
+        SELECT id, title, detail, category, priority, due_date AS dueDate, completed, completed_at AS completedAt, deleted_at AS deletedAt, created_at AS createdAt, updated_at AS updatedAt
         FROM todos
-        WHERE id = #{id}
+        WHERE id = #{id} AND deleted_at IS NULL
     </select>
     <insert id="insert" parameterType="com.example.todoapp.Todo" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO todos (title, detail, category, priority, due_date, completed)
@@ -66,10 +89,14 @@
             due_date = #{dueDate},
             completed = #{completed},
             completed_at = #{completedAt}
-        WHERE id = #{id}
+        WHERE id = #{id} AND deleted_at IS NULL
     </update>
-    <delete id="deleteById" parameterType="long">
-        DELETE FROM todos
-        WHERE id = #{id}
-    </delete>
+    <update id="deleteById" parameterType="long">
+        UPDATE todos SET deleted_at = CURRENT_TIMESTAMP
+        WHERE id = #{id} AND deleted_at IS NULL
+    </update>
+    <update id="restoreById" parameterType="long">
+        UPDATE todos SET deleted_at = NULL
+        WHERE id = #{id} AND deleted_at IS NOT NULL
+    </update>
 </mapper>

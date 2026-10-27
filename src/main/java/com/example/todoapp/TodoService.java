@@ -19,7 +19,7 @@ public class TodoService {
     }
 
     public List<Todo> search(String keyword, String category, String order, LocalDate from, LocalDate to) {
-        return todoMapper.search(keyword, category, order, from, to, true, Integer.MAX_VALUE, 0);
+        return todoMapper.search(keyword, category, order, from, to, true, false, Integer.MAX_VALUE, 0);
     }
 
     public List<Todo> search(String keyword, String category, String order) {
@@ -33,11 +33,21 @@ public class TodoService {
     public List<Todo> search(String keyword, String category, String order, boolean showCompleted,
             int page, int pageSize) {
         int offset = (page - 1) * pageSize;
-        return todoMapper.search(keyword, category, order, null, null, showCompleted, pageSize, offset);
+        return todoMapper.search(keyword, category, order, null, null, showCompleted, false, pageSize, offset);
+    }
+
+    public List<Todo> search(String keyword, String category, String order, boolean showCompleted,
+            boolean trash, int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        return todoMapper.search(keyword, category, order, null, null, showCompleted, trash, pageSize, offset);
     }
 
     public long countSearch(String keyword, String category, boolean showCompleted) {
         return todoMapper.countSearch(keyword, category, null, null, showCompleted);
+    }
+
+    public long countSearch(String keyword, String category, boolean showCompleted, boolean trash) {
+        return todoMapper.countSearchInTrash(keyword, category, showCompleted, trash);
     }
 
     public Todo findById(Long id) {
@@ -70,5 +80,9 @@ public class TodoService {
         int result = todoMapper.deleteById(id);
         log.info("Todo deletion completed");
         return result;
+    }
+
+    public int restore(Long id) {
+        return todoMapper.restoreById(id);
     }
 }

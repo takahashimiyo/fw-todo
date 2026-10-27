@@ -21,6 +21,7 @@
 | `priority` | `INT` | 不可 | `2` | 優先度。`1`＝高、`2`＝中、`3`＝低。 |
 | `due_date` | `DATE` | 可 | なし | 期限。未入力は `NULL`。期限順の検索・並び替えに使用する。 |
 | `completed` | `BOOLEAN` | 不可 | `FALSE` | 完了状態。`TRUE`＝完了、`FALSE`＝未完了。 |
+| `deleted_at` | `DATETIME` | 可 | なし | 削除した日時。値がある項目は通常の一覧・API・MCPには出さず、ごみ箱に表示する。復元時は `NULL` に戻す。 |
 | `created_at` | `DATETIME` | 不可 | 登録時に現在日時を自動設定 | 登録日時。利用者の入力対象ではない。 |
 | `updated_at` | `DATETIME` | 不可 | 登録時に現在日時を設定し、更新時にも自動更新 | 最終更新日時。利用者の入力対象ではない。 |
 
@@ -37,6 +38,7 @@ CREATE TABLE todos (
     priority INT NOT NULL DEFAULT 2,
     due_date DATE NULL,
     completed BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at DATETIME NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
@@ -55,6 +57,7 @@ CREATE TABLE todos (
 | 優先度を保存し、「高・中・低」と表示する | `priority` | 必須。1・2・3を保存し、画面ではそれぞれ高・中・低に対応させる。初期値は2（中）。 |
 | 期限を保存し、期限順に並べ替える | `due_date` | 任意の日付。期限が空のときは `NULL`。 |
 | 完了・未完了を保存する | `completed` | 必須。`FALSE`（未完了）を初期値とする。画面の値1・0との対応は、1＝完了、0＝未完了。 |
+| 削除した項目を保管し、あとから戻す | `deleted_at` | 任意。日時が入っている間は通常の取得対象から除外し、戻す操作で `NULL` にする。 |
 | 項目番号を自動で付ける | `id` | 主キーとして自動採番。編集・削除対象の指定にも使う。 |
 | 登録日時・最終更新日時を自動で記録する | `created_at`, `updated_at` | MySQLが自動設定・更新する。画面入力には出さない。 |
 | 登録・編集・削除の操作記録に対象番号を含める | `id` | 操作時に対象の `id` をアプリのログへ記録する。ログはこのテーブルの列には保存しない。 |

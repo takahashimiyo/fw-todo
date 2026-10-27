@@ -11,12 +11,15 @@ public interface TodoMapper {
 
     List<Todo> search(@Param("keyword") String keyword, @Param("category") String category,
             @Param("order") String order, @Param("from") LocalDate from, @Param("to") LocalDate to,
-            @Param("showCompleted") boolean showCompleted, @Param("limit") int limit,
+            @Param("showCompleted") boolean showCompleted, @Param("trash") boolean trash, @Param("limit") int limit,
             @Param("offset") int offset);
 
     long countSearch(@Param("keyword") String keyword, @Param("category") String category,
             @Param("from") LocalDate from, @Param("to") LocalDate to,
             @Param("showCompleted") boolean showCompleted);
+
+    long countSearchInTrash(@Param("keyword") String keyword, @Param("category") String category,
+            @Param("showCompleted") boolean showCompleted, @Param("trash") boolean trash);
 
     Todo findById(Long id);
 
@@ -25,4 +28,6 @@ public interface TodoMapper {
     int update(Todo todo);
 
     int deleteById(Long id);
+
+    int restoreById(Long id);
 }

@@ -31,16 +31,21 @@ public class HomeController {
             @RequestParam(defaultValue = "すべて") String category,
             @RequestParam(defaultValue = "asc") String order,
             @RequestParam(defaultValue = "false") boolean showCompleted,
+            @RequestParam(defaultValue = "") String trash,
             @RequestParam(defaultValue = "1") int page, Model model) {
+        boolean showTrash = "1".equals(trash);
+        if (showTrash) {
+            showCompleted = true;
+        }
         if (!"asc".equals(order) && !"desc".equals(order)) {
             order = "asc";
         }
         page = Math.max(page, 1);
         String searchCategory = "すべて".equals(category) ? "" : category;
-        long totalItems = todoService.countSearch(keyword, searchCategory, showCompleted);
+        long totalItems = todoService.countSearch(keyword, searchCategory, showCompleted, showTrash);
         int totalPages = (int) Math.max(1, (totalItems + 9) / 10);
         page = Math.min(page, totalPages);
-        model.addAttribute("todos", todoService.search(keyword, searchCategory, order, showCompleted, page, 10));
+        model.addAttribute("todos", todoService.search(keyword, searchCategory, order, showCompleted, showTrash, page, 10));
         model.addAttribute("page", page);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("today", java.time.LocalDate.now());
@@ -48,6 +53,7 @@ public class HomeController {
         model.addAttribute("category", category);
         model.addAttribute("order", order);
         model.addAttribute("showCompleted", showCompleted);
+        model.addAttribute("trash", showTrash);
         model.addAttribute("categories", new String[] { "デザイン", "マーケティング", "プログラミング", "資格", "就職活動" });
         return "todos";
     }
@@ -134,5 +140,12 @@ public class HomeController {
         todoService.delete(id);
         redirectAttributes.addFlashAttribute("message", "削除しました");
         return "redirect:/todos";
+    }
+
+    @PostMapping("/todos/{id}/restore")
+    public String restoreTodo(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        todoService.restore(id);
+        redirectAttributes.addFlashAttribute("message", "やることを元に戻しました");
+        return "redirect:/todos?trash=1";
     }
 }
