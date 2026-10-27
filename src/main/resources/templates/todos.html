@@ -44,7 +44,7 @@
             </thead>
             <tbody>
                 <tr th:each="todo : ${todos}"
-                    th:attr="data-overdue=${todo.dueDate != null and todo.dueDate.isBefore(T(java.time.LocalDate).now()) and !todo.completed}">
+                    th:attr="data-overdue=${todo.dueDate != null and todo.dueDate.isBefore(today) and !todo.completed}">
                     <td th:text="${todo.title}"></td>
                     <td th:text="${todo.category}"></td>
                     <td th:text="${todo.priority == 1 ? '高' : (todo.priority == 2 ? '中' : '低')}"></td>

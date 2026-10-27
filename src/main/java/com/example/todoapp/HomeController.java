@@ -34,6 +34,7 @@ public class HomeController {
             order = "asc";
         }
         model.addAttribute("todos", todoService.search(keyword, "すべて".equals(category) ? "" : category, order));
+        model.addAttribute("today", java.time.LocalDate.now());
         model.addAttribute("keyword", keyword);
         model.addAttribute("category", category);
         model.addAttribute("order", order);
