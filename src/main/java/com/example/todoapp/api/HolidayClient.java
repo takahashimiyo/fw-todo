@@ -4,10 +4,12 @@ import java.util.Map;
 import java.util.Collections;
 
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.stereotype.Component;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClient;
 
+@Component
 public class HolidayClient {
 
     private static final String HOLIDAYS_URL = "https://holidays-jp.github.io/api/v1/date.json";
