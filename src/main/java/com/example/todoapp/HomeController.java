@@ -29,15 +29,18 @@ public class HomeController {
     @GetMapping("/todos")
     public String todos(@RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "すべて") String category,
-            @RequestParam(defaultValue = "asc") String order, Model model) {
+            @RequestParam(defaultValue = "asc") String order,
+            @RequestParam(defaultValue = "false") boolean showCompleted, Model model) {
         if (!"asc".equals(order) && !"desc".equals(order)) {
             order = "asc";
         }
-        model.addAttribute("todos", todoService.search(keyword, "すべて".equals(category) ? "" : category, order));
+        model.addAttribute("todos", todoService.search(keyword, "すべて".equals(category) ? "" : category, order,
+                showCompleted));
         model.addAttribute("today", java.time.LocalDate.now());
         model.addAttribute("keyword", keyword);
         model.addAttribute("category", category);
         model.addAttribute("order", order);
+        model.addAttribute("showCompleted", showCompleted);
         model.addAttribute("categories", new String[] { "デザイン", "マーケティング", "プログラミング", "資格", "就職活動" });
         return "todos";
     }

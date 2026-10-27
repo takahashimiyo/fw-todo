@@ -27,8 +27,8 @@
             <button class="btn" type="submit">絞り込む</button>
         </form>
         <p>
-            <a class="link" th:href="@{/todos(keyword=${keyword}, category=${category}, order='asc')}">期限が近い順</a>
-            <a class="link" th:href="@{/todos(keyword=${keyword}, category=${category}, order='desc')}">期限が遠い順</a>
+            <a class="link" th:href="@{/todos(keyword=${keyword}, category=${category}, order='asc', showCompleted=${showCompleted ? true : null})}">期限が近い順</a>
+            <a class="link" th:href="@{/todos(keyword=${keyword}, category=${category}, order='desc', showCompleted=${showCompleted ? true : null})}">期限が遠い順</a>
         </p>
         <p th:if="${#lists.isEmpty(todos)}">まだ1件も登録されていません</p>
         <table class="todo-table" th:unless="${#lists.isEmpty(todos)}">
@@ -56,6 +56,16 @@
                 </tr>
             </tbody>
         </table>
+        <form action="/todos" method="get">
+            <input type="hidden" name="keyword" th:value="${keyword}">
+            <input type="hidden" name="category" th:value="${category}">
+            <input type="hidden" name="order" th:value="${order}">
+            <label>
+                <input type="checkbox" name="showCompleted" value="true" th:checked="${showCompleted}">
+                完了したものも表示する
+            </label>
+            <button class="btn" type="submit">表示を更新</button>
+        </form>
     </main>
 </body>
 
