@@ -10,18 +10,23 @@
 
 <body>
     <main class="container calendar-container">
-        <h1 class="page-title" th:text="|${year}年${month}月|">年月</h1>
+        <h1 class="page-title" th:text="${title}">カレンダー</h1>
         <nav class="calendar-navigation" aria-label="月の移動">
             <div class="calendar-navigation-group">
-                <a class="link" th:href="@{/calendar(year=${previousYear},month=${previousMonth})}">前の月</a>
-                <a class="link" th:href="@{/calendar(year=${nextYear},month=${nextMonth})}">次の月</a>
+                <a class="link" th:if="${weekView}" th:href="@{/calendar(view='week',date=${previousWeekDate})}">前の週</a>
+                <a class="link" th:unless="${weekView}" th:href="@{/calendar(year=${previousYear},month=${previousMonth})}">前の月</a>
+                <a class="link" th:if="${weekView}" th:href="@{/calendar(view='week',date=${nextWeekDate})}">次の週</a>
+                <a class="link" th:unless="${weekView}" th:href="@{/calendar(year=${nextYear},month=${nextMonth})}">次の月</a>
             </div>
             <div class="calendar-navigation-group">
+                <a class="link" th:if="${weekView}" th:href="@{/calendar(year=${year},month=${month})}">月表示</a>
+                <a class="link" th:unless="${weekView}" th:href="@{/calendar(view='week',date=${switchDate})}">週表示</a>
                 <a class="link" href="/todos">表で見る</a>
                 <a class="link" href="/todos/new">新規登録</a>
             </div>
         </nav>
-        <table class="calendar-table" th:attr="data-from=${firstDay},data-to=${lastDay}">
+        <table class="calendar-table" th:classappend="${weekView} ? 'week-view' : ''"
+            th:attr="data-from=${firstDay},data-to=${lastDay},data-view=${weekView ? 'week' : 'month'}">
             <thead>
                 <tr>
                     <th scope="col">日</th>
@@ -46,6 +51,7 @@
             const calendar = document.querySelector(".calendar-table");
             const from = calendar.dataset.from;
             const to = calendar.dataset.to;
+            const weekView = calendar.dataset.view === "week";
             const params = new URLSearchParams({ from, to });
             const res = await fetch(`/api/todos?${params}`);
             const todos = await res.json();
@@ -54,7 +60,7 @@
 
             for (const cell of calendar.querySelectorAll("td[data-date]")) {
                 const matchingTodos = todos.filter(todo => todo.dueDate === cell.dataset.date);
-                for (const todo of matchingTodos.slice(0, 3)) {
+                for (const todo of (weekView ? matchingTodos : matchingTodos.slice(0, 3))) {
                     const name = document.createElement("a");
                     name.className = "link";
                     name.href = `/todos/${todo.id}/edit`;
@@ -64,7 +70,7 @@
                     }
                     cell.appendChild(name);
                 }
-                if (matchingTodos.length > 3) {
+                if (!weekView && matchingTodos.length > 3) {
                     const more = document.createElement("div");
                     more.textContent = `ほか ${matchingTodos.length - 3}件`;
                     cell.appendChild(more);
