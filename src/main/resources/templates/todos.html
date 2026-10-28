@@ -13,6 +13,7 @@
         <p class="flash" th:if="${message}" th:text="${message}"></p>
         <p th:if="${!trash}"><a class="link" href="/todos/new">新規登録</a> <a class="link" href="/calendar">カレンダーで見る</a> <a class="link" href="/todos?trash=1">ごみ箱を見る</a></p>
         <p th:if="${trash}"><a class="link" href="/todos">一覧に戻る</a></p>
+        <p><a class="link" th:href="@{/api/todos.csv(keyword=${keyword}, category=${category}, order=${order}, showCompleted=${showCompleted ? true : null}, trash=${trash ? '1' : null})}">CSVを書き出す</a></p>
         <form class="search-bar" action="/todos" method="get">
             <input th:if="${trash}" type="hidden" name="trash" value="1">
             <input type="hidden" name="order" th:value="${order}">
