@@ -101,8 +101,52 @@
             }
         }
 
+        async function showWeather() {
+            try {
+                const res = await fetch("/api/weather");
+                if (!res.ok || res.headers.has("X-Weather-Unavailable")) {
+                    return;
+                }
+
+                const weather = await res.json();
+                const weatherTypes = {
+                    0: { icon: "☀️", label: "快晴" }, 1: { icon: "🌤️", label: "晴れ" },
+                    2: { icon: "⛅", label: "くもり時々晴れ" }, 3: { icon: "☁️", label: "くもり" },
+                    45: { icon: "🌫️", label: "霧" }, 48: { icon: "🌫️", label: "霧" },
+                    51: { icon: "🌦️", label: "弱い霧雨" }, 53: { icon: "🌦️", label: "霧雨" },
+                    55: { icon: "🌧️", label: "強い霧雨" }, 56: { icon: "🌧️", label: "凍る霧雨" },
+                    57: { icon: "🌧️", label: "凍る霧雨" }, 61: { icon: "🌧️", label: "弱い雨" },
+                    63: { icon: "🌧️", label: "雨" }, 65: { icon: "🌧️", label: "強い雨" },
+                    66: { icon: "🌧️", label: "凍る雨" }, 67: { icon: "🌧️", label: "凍る雨" },
+                    71: { icon: "🌨️", label: "弱い雪" }, 73: { icon: "🌨️", label: "雪" },
+                    75: { icon: "❄️", label: "強い雪" }, 77: { icon: "🌨️", label: "あられ" },
+                    80: { icon: "🌦️", label: "にわか雨" }, 81: { icon: "🌧️", label: "雨" },
+                    82: { icon: "🌧️", label: "強いにわか雨" }, 85: { icon: "🌨️", label: "にわか雪" },
+                    86: { icon: "❄️", label: "強いにわか雪" }, 95: { icon: "⛈️", label: "雷雨" },
+                    96: { icon: "⛈️", label: "ひょうを伴う雷雨" }, 99: { icon: "⛈️", label: "強いひょうを伴う雷雨" }
+                };
+                for (const forecast of weather.forecasts ?? []) {
+                    const cell = [...document.querySelectorAll("td[data-date]")]
+                        .find(dayCell => dayCell.dataset.date === forecast.date);
+                    if (!cell || forecast.weatherCode == null || forecast.temperatureMin == null
+                            || forecast.temperatureMax == null) {
+                        continue;
+                    }
+
+                    const weatherType = weatherTypes[forecast.weatherCode] ?? { icon: "🌡️", label: "天気情報" };
+                    const display = document.createElement("div");
+                    display.textContent = `${weatherType.icon} ${forecast.temperatureMin}° / ${forecast.temperatureMax}°C`;
+                    display.title = `東京の予報: ${weatherType.label}、最低${forecast.temperatureMin}°C、最高${forecast.temperatureMax}°C`;
+                    cell.appendChild(display);
+                }
+            } catch (error) {
+                // 天気を取得できなくても、カレンダーの表示は続けます。
+            }
+        }
+
         showTodos();
         colorSpecialDays();
+        showWeather();
     </script>
 </body>
 
