@@ -3,12 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>削除確認</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
-    <main class="container">
+    <div class="app-layout"><aside th:replace="~{fragments/sidebar :: sidebar('todos')}"></aside>
+    <main class="container content-card form-card">
+        <p class="eyebrow">MY TODO / タスク削除</p>
         <h1 class="page-title">このやることを削除しますか？</h1>
         <p class="confirm-value">やること：<span th:text="${todo.title}"></span></p>
         <p class="confirm-value">ジャンル：<span th:text="${todo.category}"></span></p>
@@ -19,7 +22,7 @@
             </form>
             <a class="btn sub" href="/todos">やめる</a>
         </div>
-    </main>
+    </main></div>
 </body>
 
 </html>

@@ -3,18 +3,20 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>やること一覧</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
-    <main class="container">
-        <h1 class="page-title" th:text="${trash ? 'ごみ箱' : 'やること一覧'}">やること一覧</h1>
+    <div class="app-layout">
+    <aside th:replace="~{fragments/sidebar :: sidebar(${trash ? 'trash' : 'todos'})}"></aside>
+    <main class="container content-card">
+        <p class="eyebrow" th:if="${trash}">MY TODO / ごみ箱</p>
+        <div class="page-heading"><div><h1 class="page-title" th:text="${trash ? 'ごみ箱' : 'やること一覧'}">やること一覧</h1></div></div>
         <p class="flash" th:if="${message}" th:text="${message}"></p>
-        <p th:if="${!trash}"><a class="link" href="/todos/new">新規登録</a> <a class="link" href="/calendar">カレンダーで見る</a> <a class="link" href="/todos?trash=1">ごみ箱を見る</a></p>
-        <p th:if="${trash}"><a class="link" href="/todos">一覧に戻る</a></p>
-        <p><a class="link" th:href="@{/api/todos.csv(keyword=${keyword}, category=${category}, order=${order}, showCompleted=${showCompleted ? true : null}, trash=${trash ? '1' : null})}">CSVを書き出す</a></p>
-        <form class="search-bar" action="/todos" method="get">
+        <p th:if="${trash}"><a class="link" href="/todos">← 一覧に戻る</a></p>
+        <div class="list-tools"><form class="search-bar" action="/todos" method="get">
             <input th:if="${trash}" type="hidden" name="trash" value="1">
             <input type="hidden" name="order" th:value="${order}">
             <label>やることの名前
@@ -29,11 +31,11 @@
             </label>
             <button class="btn" type="submit">絞り込む</button>
         </form>
-        <p>
-            <a class="link" th:href="@{/todos(keyword=${keyword}, category=${category}, order='asc', showCompleted=${showCompleted ? true : null}, trash=${trash ? '1' : null})}">期限が近い順</a>
-            <a class="link" th:href="@{/todos(keyword=${keyword}, category=${category}, order='desc', showCompleted=${showCompleted ? true : null}, trash=${trash ? '1' : null})}">期限が遠い順</a>
-        </p>
-        <p th:if="${#lists.isEmpty(todos)}" th:text="${trash ? 'ごみ箱は空です' : 'まだ1件も登録されていません'}">まだ1件も登録されていません</p>
+        <div class="list-options"><div class="sort-links"><span>期限：</span>
+            <a class="link" th:href="@{/todos(keyword=${keyword}, category=${category}, order='asc', showCompleted=${showCompleted ? true : null}, trash=${trash ? '1' : null})}">近い順</a>
+            <a class="link" th:href="@{/todos(keyword=${keyword}, category=${category}, order='desc', showCompleted=${showCompleted ? true : null}, trash=${trash ? '1' : null})}">遠い順</a>
+        </div><a class="link export-link" th:href="@{/api/todos.csv(keyword=${keyword}, category=${category}, order=${order}, showCompleted=${showCompleted ? true : null}, trash=${trash ? '1' : null})}">CSVを書き出す ↓</a></div></div>
+        <p class="empty-state" th:if="${#lists.isEmpty(todos)}" th:text="${trash ? 'ごみ箱は空です' : 'まだ1件も登録されていません'}">まだ1件も登録されていません</p>
         <table class="todo-table" th:unless="${#lists.isEmpty(todos)}">
             <thead>
                 <tr>
@@ -65,7 +67,7 @@
                th:href="@{/todos(keyword=${keyword}, category=${category}, order=${order}, showCompleted=${showCompleted ? true : null}, trash=${trash ? '1' : null}, page=${pageNumber})}"
                th:text="${pageNumber}" th:attr="aria-current=${pageNumber == page ? 'page' : null}"></a>
         </nav>
-        <form action="/todos" method="get">
+        <form class="completed-filter" action="/todos" method="get">
             <input th:if="${trash}" type="hidden" name="trash" value="1">
             <input type="hidden" name="keyword" th:value="${keyword}">
             <input type="hidden" name="category" th:value="${category}">
@@ -76,7 +78,7 @@
             </label>
             <button class="btn" type="submit">表示を更新</button>
         </form>
-    </main>
+    </main></div>
 </body>
 
 </html>

@@ -9,10 +9,15 @@
 </head>
 
 <body>
-    <main class="container">
-        <h1 class="page-title" th:text="${title}">見出し</h1>
-        <p>タスクを管理するページです。</p>
-    </main>
+    <div class="app-layout">
+        <aside th:replace="~{fragments/sidebar :: sidebar('todos')}"></aside>
+        <main class="container content-card">
+            <p class="eyebrow">MY TODO</p>
+            <h1 class="page-title" th:text="${title}">ToDo</h1>
+            <p class="page-description">タスクを管理するページです。</p>
+            <p><a class="btn" href="/todos">タスク一覧を開く</a></p>
+        </main>
+    </div>
 </body>
 
 </html>

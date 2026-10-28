@@ -9,7 +9,9 @@
 </head>
 
 <body>
-    <main class="container calendar-container">
+    <div class="app-layout"><aside th:replace="~{fragments/sidebar :: sidebar(${weekView ? 'day' : 'month'})}"></aside>
+    <main class="container content-card calendar-container">
+        <p class="eyebrow">MY TODO / カレンダー</p>
         <h1 class="page-title" th:text="${title}">カレンダー</h1>
         <nav class="calendar-navigation" aria-label="月の移動">
             <div class="calendar-navigation-group">
@@ -45,7 +47,7 @@
                 </tr>
             </tbody>
         </table>
-    </main>
+    </main></div>
     <script>
         async function showTodos() {
             const calendar = document.querySelector(".calendar-table");

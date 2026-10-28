@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside class="sidebar" th:fragment="sidebar(active)">
+    <a class="brand" href="/todos" aria-label="ToDo一覧へ">
+        <span class="brand-mark" aria-hidden="true">✓</span>
+        <span>My Todo</span>
+    </a>
+    <details class="sidebar-menu" open>
+        <summary>メニュー</summary>
+        <nav class="sidebar-nav" aria-label="メインメニュー">
+            <a class="nav-link" th:classappend="${active == 'new' ? ' is-active' : ''}" href="/todos/new"><span class="nav-icon" aria-hidden="true">＋</span>新規登録</a>
+            <a class="nav-link" th:classappend="${active == 'todos' ? ' is-active' : ''}" href="/todos"><span class="nav-icon" aria-hidden="true">▤</span>一覧でみる</a>
+            <div class="nav-submenu" aria-label="一覧の表示方法">
+                <a class="nav-link nav-child" th:classappend="${active == 'day' ? ' is-active' : ''}" href="/calendar?view=week">日別</a>
+                <a class="nav-link nav-child" th:classappend="${active == 'month' ? ' is-active' : ''}" href="/calendar">月別</a>
+                <a class="nav-link nav-child" th:classappend="${active == 'genre' ? ' is-active' : ''}" href="/todos/genres">ジャンル別</a>
+            </div>
+            <a class="nav-link" th:classappend="${active == 'trash' ? ' is-active' : ''}" href="/todos?trash=1"><span class="nav-icon" aria-hidden="true">▱</span>ごみ箱</a>
+        </nav>
+    </details>
+    <p class="sidebar-note">毎日のタスクを、すっきり管理。</p>
+</aside>
+</body>
+</html>

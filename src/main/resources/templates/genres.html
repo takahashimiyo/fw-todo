@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ジャンル別 | My Todo</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="app-layout">
+    <aside th:replace="~{fragments/sidebar :: sidebar('genre')}"></aside>
+    <main class="container content-card">
+        <p class="eyebrow">MY TODO / ジャンル別</p>
+        <h1 class="page-title">ジャンル別</h1>
+        <section class="notice-card">
+            <span class="notice-icon" aria-hidden="true">✳</span>
+            <div>
+                <h2>ジャンル別表示は準備中です</h2>
+                <p>現在のタスク一覧から、ジャンルを指定して絞り込めます。</p>
+                <a class="btn" href="/todos">タスク一覧へ</a>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

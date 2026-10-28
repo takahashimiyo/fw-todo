@@ -58,6 +58,11 @@ public class HomeController {
         return "todos";
     }
 
+    @GetMapping("/todos/genres")
+    public String genres() {
+        return "genres";
+    }
+
     @GetMapping("/todos/new")
     public String createForm(Model model) {
         model.addAttribute("todo", new Todo());

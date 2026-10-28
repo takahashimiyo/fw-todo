@@ -3,12 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>やること編集</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
-    <main class="container">
+    <div class="app-layout"><aside th:replace="~{fragments/sidebar :: sidebar('todos')}"></aside>
+    <main class="container content-card form-card">
+        <p class="eyebrow">MY TODO / タスク編集</p>
         <h1 class="page-title">やること編集</h1>
         <form th:action="@{/todos/{id}/confirm(id=${todo.id})}" method="post" th:object="${todo}">
             <div class="form-row"><label class="form-label" for="title">やること</label><input class="form-input"
@@ -44,7 +47,7 @@
             <button class="btn" type="submit">確認する</button>
             <a class="btn sub" href="/todos">一覧へ</a>
         </form>
-    </main>
+    </main></div>
 </body>
 
 </html>

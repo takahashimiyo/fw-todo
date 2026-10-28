@@ -3,12 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>編集内容の確認</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
-    <main class="container">
+    <div class="app-layout"><aside th:replace="~{fragments/sidebar :: sidebar('todos')}"></aside>
+    <main class="container content-card form-card">
+        <p class="eyebrow">MY TODO / 編集内容の確認</p>
         <h1 class="page-title">編集内容の確認</h1>
         <p class="confirm-value">やること：<span th:text="${#strings.isEmpty(todo.title) ? '（入力なし）' : todo.title}"></span>
         </p>
@@ -42,7 +45,7 @@
                 <button class="btn sub" type="submit">書き直す</button>
             </form>
         </div>
-    </main>
+    </main></div>
 </body>
 
 </html>

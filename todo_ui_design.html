@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Taskly | 個人向けタスク管理アプリ デザインモック</title>
+  <style>
+    :root {
+      --canvas: #f7f9f9; --white: #fff; --ink: #253343; --navy: #24384a;
+      --muted: #7b8993; --soft: #a3adb4; --line: #e6eced;
+      --accent: #267e72; --accent-deep: #176d62; --accent-light: #eaf5f1;
+      --shadow: 0 8px 24px rgba(31, 68, 65, 0.035);
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 320px; }
+    body { margin: 0; color: var(--ink); background: var(--canvas); font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, system-ui, sans-serif; font-size: 14px; letter-spacing: .012em; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid rgba(47, 141, 128, .28); outline-offset: 2px; }
+    svg.icon { width: 17px; height: 17px; flex: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    .app-shell { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 5fr); max-width: 1800px; min-height: 100vh; margin: auto; background: var(--canvas); }
+    .sidebar { display: flex; flex-direction: column; min-height: 100vh; padding: 34px 18px 26px; background: #fff; border-right: 1px solid #e8eeee; position: sticky; top: 0; align-self: start; height: 100vh; }
+    .brand { display: flex; align-items: center; gap: 10px; padding: 0 4px; margin-bottom: 54px; min-width: 0; }
+    .brand-mark { height: 37px; width: 37px; flex: none; background: var(--accent); color: #fff; border-radius: 12px; display: grid; place-items: center; }
+    .brand-mark svg { height: 22px; width: 22px; stroke-width: 2.4; }
+    .brand-name { font-weight: 800; font-size: 22px; letter-spacing: -.045em; line-height: 1.1; color: #263e3a; white-space: nowrap; }
+    .brand-name .dot { color: #5cb2a1; }
+    .brand-small { margin-top: 4px; color: #96a4a7; font-size: 9px; letter-spacing: .105em; white-space: nowrap; }
+    .side-label { font-size: 10px; letter-spacing: .17em; color: #9faeb0; font-weight: 800; margin: 0 0 14px 13px; }
+    .nav-new { border: none; background: var(--accent); color: #fff; border-radius: 12px; height: 47px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 9px; font-weight: 700; letter-spacing: .03em; box-shadow: 0 5px 10px rgba(38, 126, 114, .13); margin-bottom: 28px; transition: background .15s, transform .15s; }
+    .nav-new:hover { background: var(--accent-deep); transform: translateY(-1px); }
+    .nav-heading { display: flex; align-items: center; gap: 9px; margin: 1px 4px 12px 9px; color: #526674; font-weight: 700; font-size: 13px; }
+    .nav-heading .icon { color: #8a9a9f; }
+    .nav-sub { display: grid; gap: 6px; margin-left: 2px; }
+    .nav-link { border: none; background: transparent; width: 100%; padding: 13px 10px 13px 18px; color: #697984; border-radius: 10px; display: flex; text-align: left; align-items: center; gap: 11px; font-size: 13px; font-weight: 650; transition: background .15s, color .15s; }
+    .nav-link:hover { background: #f2f8f6; color: var(--accent); }
+    .nav-link.active { background: var(--accent-light); color: var(--accent-deep); font-weight: 800; }
+    .nav-link .icon { height: 17px; width: 17px; }
+    .sidebar-bottom { margin-top: auto; }
+    .sidebar-rule { height: 1px; background: #ecf0f0; margin: 20px 0 15px; }
+    .trash-count { margin-left: auto; border-radius: 999px; background: #f0f2f2; font-size: 10px; min-width: 19px; height: 19px; display: inline-flex; align-items: center; justify-content: center; color: #7c8990; }
+    .side-motto { font-size: 10px; color: #abb5b9; line-height: 1.9; margin: 24px 7px 0; }
+    .main { min-width: 0; padding: 40px clamp(25px, 3.2vw, 53px) 58px; }
+    .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 31px; }
+    .eyebrow { font-size: 10px; color: var(--accent); letter-spacing: .18em; font-weight: 800; margin: 0 0 13px; }
+    h1 { font-size: 30px; letter-spacing: -.04em; margin: 0 0 8px; font-weight: 800; color: var(--navy); line-height: 1.3; }
+    .header-subtitle { color: #809098; font-size: 13px; margin: 0; }
+    .today-date { display: flex; align-items: center; gap: 8px; border: 1px solid #e3ebeb; border-radius: 999px; background: #fff; padding: 10px 13px; color: #607478; font-size: 12px; font-weight: 650; white-space: nowrap; margin-top: 24px; }
+    .today-date .icon { color: var(--accent); }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 24px; }
+    .mode-switch { display: flex; align-items: center; padding: 5px; background: #e9eeed; border-radius: 12px; gap: 4px; }
+    .mode-btn { border: 0; border-radius: 9px; padding: 10px 23px; color: #849394; font-weight: 700; background: transparent; white-space: nowrap; font-size: 13px; }
+    .mode-btn.active { color: var(--accent-deep); background: #fff; box-shadow: 0 2px 8px rgba(29, 78, 68, .07); }
+    .toolbar-note { display: inline-flex; align-items: center; gap: 9px; color: #7a8b91; background: rgba(255,255,255,.84); padding: 10px 13px; border: 1px solid #e9efee; border-radius: 999px; font-size: 11px; line-height: 1.5; }
+    .toolbar-note .emoji { font-size: 17px; }
+    .content-top { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin: 0 0 17px; }
+    .period-group { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .period-title { margin: 0; color: #31404e; font-size: 19px; letter-spacing: -.025em; font-weight: 800; display: inline-flex; align-items: center; gap: 9px; }
+    .period-controls { display: inline-flex; gap: 5px; margin-left: 8px; }
+    .icon-btn { display: inline-grid; place-items: center; border: 1px solid #e2eaea; background: #fff; color: #687f84; border-radius: 9px; width: 32px; height: 32px; transition: border-color .15s, background .15s; }
+    .icon-btn:hover { border-color: #a5d1c7; background: #f2f9f7; }
+    .icon-btn svg { width: 16px; height: 16px; }
+    .today-btn { border: 1px solid #dbe6e3; border-radius: 8px; background: #fff; color: var(--accent-deep); font-size: 11px; font-weight: 800; padding: 9px 12px; margin-left: 3px; }
+    .total-count { color: #7d8d94; font-size: 12px; white-space: nowrap; }
+    .progress-box { display: flex; align-items: center; justify-content: space-between; gap: 24px; border: 1px solid #e5eeec; background: #eff7f4; border-radius: 13px; padding: 16px 20px; margin-bottom: 15px; }
+    .progress-box-left { display: flex; align-items: center; gap: 10px; font-weight: 750; color: #3a756d; font-size: 13px; }
+    .progress-box-left svg { color: var(--accent); }
+    .progress-box-right { display: flex; align-items: center; gap: 14px; color: #5a867f; font-size: 12px; font-weight: 800; }
+    .progress-track { width: 125px; max-width: 20vw; height: 7px; background: #d5e7e0; border-radius: 99px; overflow: hidden; }
+    .progress-fill { background: #50a392; height: 100%; border-radius: inherit; }
+    .task-list { display: grid; gap: 12px; }
+    .task-card { background: #fff; border: 1px solid #e7eded; box-shadow: var(--shadow); border-radius: 15px; padding: 21px 21px 18px; display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 20px; min-width: 0; }
+    .task-card.done .task-name { text-decoration: line-through; color: #829191; }
+    .task-card-top { display: flex; align-items: center; gap: 11px; min-width: 0; margin-bottom: 15px; }
+    .task-name { margin: 0; font-size: 15px; line-height: 1.6; letter-spacing: -.015em; font-weight: 800; color: #31404c; overflow-wrap: anywhere; }
+    .complete-toggle { flex: none; display: grid; place-items: center; width: 21px; height: 21px; border-radius: 7px; border: 1.8px solid #bdcaca; background: white; color: #fff; padding: 0; }
+    .complete-toggle:hover { border-color: var(--accent); }
+    .complete-toggle.completed { background: #55a492; border-color: #55a492; }
+    .complete-toggle svg { height: 14px; width: 14px; stroke-width: 2.7; }
+    .task-fields { display: flex; align-items: center; gap: clamp(18px, 3.2vw, 48px); flex-wrap: wrap; padding-left: 32px; }
+    .field { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 70px; }
+    .field-label { color: #9aa8ad; font-size: 10px; letter-spacing: .04em; font-weight: 650; }
+    .field-value { display: inline-flex; align-items: center; gap: 5px; color: #637782; font-size: 12px; font-weight: 750; }
+    .genre-chip { font-size: 11px; font-weight: 750; border-radius: 6px; padding: 4px 8px; line-height: 1.5; white-space: nowrap; }
+    .genre-marketing { color: #916527; background: #fff0d5; }
+    .genre-job { color: #82629a; background: #f2e8fb; }
+    .genre-programming { color: #4d79a7; background: #e8f2ff; }
+    .genre-design { color: #b56b79; background: #fff0f1; }
+    .genre-cert { color: #4f8b69; background: #e4f4e8; }
+    .priority { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 750; }
+    .priority .dot { height: 7px; width: 7px; border-radius: 50%; background: currentColor; }
+    .priority-high { color: #d77c69; }
+    .priority-mid { color: #d6a34a; }
+    .priority-low { color: #7c99a1; }
+    .status { display: inline-flex; align-items: center; padding: 5px 9px; border-radius: 7px; font-size: 11px; font-weight: 750; white-space: nowrap; line-height: 1.5; }
+    .status-todo { color: #778994; background: #eff2f4; }
+    .status-progress { color: #5377a8; background: #edf4fc; }
+    .status-done { color: #39917d; background: #e8f5f0; }
+    .task-actions { display: flex; align-items: center; gap: 6px; justify-content: flex-end; align-self: start; }
+    .small-action { border: 1px solid #e6edec; padding: 7px 9px; background: #fff; color: #70838b; display: inline-flex; align-items: center; justify-content: center; gap: 5px; border-radius: 8px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .small-action:hover { background: #f5faf8; color: var(--accent); }
+    .small-action svg { width: 13px; height: 13px; }
+    .small-action.delete:hover { color: #c86e6d; background: #fff6f6; }
+    .empty-box { display: grid; place-items: center; text-align: center; gap: 8px; padding: 70px 24px; background: #fff; border: 1px dashed #d9e5e2; border-radius: 15px; color: #849599; }
+    .empty-emoji { font-size: 32px; margin-bottom: 6px; }
+    .empty-box strong { color: #597478; font-size: 15px; }
+    .empty-box p { margin: 0; line-height: 1.7; }
+    .calendar { background: #fff; border: 1px solid #e0e8e7; border-radius: 15px; box-shadow: var(--shadow); }
+    .weekday-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); background: #f5f8f8; border-bottom: 1px solid #e5ecec; border-radius: 14px 14px 0 0; }
+    .weekday-cell { text-align: center; color: #82929a; font-size: 11px; font-weight: 750; padding: 13px 4px; }
+    .weekday-cell:first-child { color: #cb8185; }
+    .weekday-cell:last-child { color: #678ab1; }
+    .month-grid { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); }
+    .month-day { position: relative; min-height: 126px; padding: 9px 9px 12px; border-bottom: 1px solid #e9eeee; border-right: 1px solid #e9eeee; cursor: pointer; transition: background .15s; min-width: 0; }
+    .month-day:nth-child(7n) { border-right: none; }
+    .month-day:nth-last-child(-n+7) { border-bottom: none; }
+    .month-day:hover { background: #f7fbfa; }
+    .month-day.outside { background: #fbfcfc; }
+    .month-day.outside .date-num { color: #bdc7c9; }
+    .month-day.today { background: #eff8f5; }
+    .month-day.today:hover { background: #e9f5f1; }
+    .date-line { display: flex; align-items: center; gap: 4px; min-height: 29px; margin: 0 0 6px; }
+    .date-num { font-weight: 800; color: #667c86; font-size: 12px; border-radius: 8px; width: 24px; height: 25px; display: inline-grid; place-items: center; }
+    .today .date-num { background: var(--accent); color: #fff; }
+    .weather { border: none; background: transparent; padding: 3px 2px; border-radius: 6px; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; font-size: 17px; line-height: 1; position: relative; cursor: help; z-index: 1; }
+    .weather:hover, .weather:focus-visible { background: #e7f2ed; z-index: 10; }
+    .weather::after { content: attr(data-tooltip); display: block; position: absolute; visibility: hidden; opacity: 0; transition: opacity .14s; z-index: 30; pointer-events: none; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); background: #24394b; color: #fff; padding: 9px 11px; border-radius: 8px; font-size: 11px; font-family: "Noto Sans JP", "Yu Gothic", sans-serif; white-space: nowrap; box-shadow: 0 7px 18px rgba(25,45,60,.15); }
+    .weather:hover::after, .weather:focus-visible::after { visibility: visible; opacity: 1; }
+    .calendar-task { display: block; border-radius: 5px; font-size: 10.5px; line-height: 1.55; padding: 5px 6px; margin: 4px 0; color: #425a61; font-weight: 750; border-left: 3px solid #b2c5bd; background: #f0f4f2; word-break: break-word; overflow-wrap: anywhere; }
+    .calendar-task.programming { background: #edf4fd; border-color: #78a4d1; color: #4f7092; }
+    .calendar-task.job { background: #f5effc; border-color: #b397ce; color: #785e8d; }
+    .calendar-task.marketing { background: #fff4e3; border-color: #e6bf72; color: #85642d; }
+    .calendar-task.design { background: #fff0f0; border-color: #e1a4aa; color: #a96e75; }
+    .calendar-task.cert { background: #edf7ee; border-color: #83b696; color: #5e8f70; }
+    .week-grid { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); }
+    .week-day { min-height: 418px; min-width: 0; padding: 0 9px 16px; border-right: 1px solid #e9eeee; cursor: pointer; transition: background .15s; }
+    .week-day:last-child { border-right: none; }
+    .week-day:hover { background: #f7fbfa; }
+    .week-day.today { background: #eff8f5; }
+    .week-day-head { border-bottom: 1px solid #eef2f0; margin: 0 -9px 12px; padding: 15px 9px 11px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; min-height: 92px; }
+    .week-name { font-size: 11px; font-weight: 800; color: #98a6a8; }
+    .week-day:first-child .week-name { color: #c98488; }
+    .week-day:last-child .week-name { color: #7197bb; }
+    .week-date-line { display: flex; gap: 2px; align-items: center; }
+    .week-date { font-size: 20px; line-height: 1.3; font-weight: 800; color: #586f7b; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 9px; }
+    .week-day.today .week-date { color: #fff; background: var(--accent); }
+    .week-day .calendar-task { margin: 0 0 8px; padding: 9px 8px; font-size: 11px; }
+    .week-empty { font-size: 10px; color: #bdc8cb; padding: 6px 2px; }
+    .genre-filter { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; margin: 0 0 17px; }
+    .filter-chip { border-radius: 999px; border: 1px solid #e1e8e7; background: #fff; color: #7b898e; padding: 9px 14px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; }
+    .filter-chip.active { border-color: #8fc4b6; background: var(--accent-light); color: var(--accent-deep); }
+    .filter-chip .tiny-dot { width: 7px; height: 7px; background: #8eb4a4; border-radius: 50%; }
+    .genre-group { margin-bottom: 20px; }
+    .genre-group-title { display: flex; align-items: center; gap: 10px; color: #50616d; font-size: 15px; font-weight: 800; padding: 3px 0 13px; }
+    .genre-group-title .count { font-size: 11px; color: #8898a0; font-weight: 650; }
+    .genre-group-title .square { height: 11px; width: 11px; border-radius: 4px; background: var(--genre-color); }
+    .footer-note { font-size: 10px; margin-top: 30px; color: #a2afb0; }
+    dialog { border: none; padding: 0; background: #fff; border-radius: 18px; width: min(450px, calc(100vw - 30px)); box-shadow: 0 30px 90px rgba(26,56,57,.21); color: var(--ink); }
+    dialog::backdrop { background: rgba(28,49,57,.38); backdrop-filter: blur(2px); }
+    .dialog-body { padding: 29px; }
+    .dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 19px; }
+    .dialog-title { font-size: 21px; margin: 0; color: #293d47; }
+    .close-btn { border: 0; background: #f1f5f4; color: #779092; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; }
+    .form-field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 17px; }
+    .form-field label { font-size: 11px; color: #6b7f88; font-weight: 750; }
+    .form-field input, .form-field select { border: 1px solid #dbe7e5; border-radius: 9px; padding: 12px 11px; min-width: 0; width: 100%; background: #fff; color: #344755; font-size: 13px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 23px; }
+    .btn-secondary { border: 1px solid #dfebe7; background: #fff; color: #697f84; border-radius: 9px; padding: 11px 16px; font-size: 12px; font-weight: 800; }
+    .btn-primary { border: 0; background: var(--accent); color: #fff; border-radius: 9px; padding: 11px 18px; font-size: 12px; font-weight: 800; }
+    .btn-danger { background: #c86569; }
+    .delete-copy { color: #697f86; font-size: 13px; line-height: 1.9; margin: 0; overflow-wrap: anywhere; }
+    .notice { position: fixed; bottom: 25px; right: 25px; background: #263c43; color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 12px; box-shadow: 0 8px 22px rgba(0,0,0,.14); opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity .2s, transform .2s; z-index: 50; }
+    .notice.show { opacity: 1; transform: translateY(0); }
+    @media (max-width: 1050px) {
+      .sidebar { padding-left: 12px; padding-right: 12px; }
+      .brand { gap: 7px; padding-left: 2px; }
+      .brand-name { font-size: 19px; }
+      .brand-small { font-size: 8px; letter-spacing: 0; }
+      .main { padding-left: 25px; padding-right: 25px; }
+      .task-fields { gap: 19px; }
+      .task-card { gap: 13px; }
+    }
+    @media (max-width: 760px) {
+      .app-shell { display: block; }
+      .sidebar { position: relative; height: auto; min-height: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 16px 20px; }
+      .brand { margin: 0 0 13px; }
+      .side-label, .side-motto, .nav-heading { display: none; }
+      .sidebar-bottom { margin-top: 0; }
+      .sidebar-rule { display: none; }
+      .nav-new { width: auto; height: 36px; padding: 0 14px; margin: 0; border-radius: 9px; white-space: nowrap; }
+      .sidebar-nav { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+      .nav-sub { display: flex; margin: 0; gap: 2px; }
+      .nav-link { white-space: nowrap; padding: 9px 10px; font-size: 11px; }
+      .nav-link .icon { display: none; }
+      .sidebar-bottom .nav-link { display: inline-flex; width: auto; }
+      .main { padding: 25px 17px 55px; }
+      .header { margin-bottom: 23px; }
+      h1 { font-size: 25px; }
+      .today-date { display: none; }
+      .mode-btn { padding: 9px 17px; }
+      .toolbar-note { font-size: 10px; }
+      .period-title { font-size: 16px; }
+      .task-card { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 16px 13px; }
+      .task-fields { padding-left: 0; gap: 15px; }
+      .task-actions { justify-content: flex-start; }
+      .calendar { overflow-x: auto; }
+      .week-grid, .weekday-row, .month-grid { min-width: 720px; }
+      .footer-note { line-height: 1.8; }
+    }
+  </style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20 13 12 21 3 12V3h9l8 8a2 2 0 0 1 0 2Z"/><path d="M7.5 7.5h.01"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15M10 10v7M14 10v7"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M13 6 18 11M4 20l4.7-1 11-11a2.5 2.5 0 0 0-3.5-3.5l-11 11z"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19"/></symbol>
+    <symbol id="i-restore" viewBox="0 0 24 24"><path d="M3 11a9 9 0 1 1 2 6M3 4v7h7M12 7v5l3 2"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Z"/><path d="m19 17 .6 1.5L21 19l-1.4.5L19 21l-.6-1.5L17 19l1.4-.5L19 17Z"/></symbol>
+  </svg>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><svg class="icon"><use href="#i-check"/></svg></div>
+        <div><div class="brand-name">Taskly<span class="dot">.</span></div><div class="brand-small">MY PERSONAL TODO</div></div>
+      </div>
+      <div class="side-label">MENU</div>
+      <div class="sidebar-nav">
+        <button class="nav-new" data-action="new"><svg class="icon"><use href="#i-plus"/></svg>新規登録</button>
+        <div class="nav-heading"><svg class="icon"><use href="#i-list"/></svg>一覧でみる</div>
+        <nav class="nav-sub" aria-label="表示方法">
+          <button class="nav-link active" data-page="day"><svg class="icon"><use href="#i-clock"/></svg>日別</button>
+          <button class="nav-link" data-page="month"><svg class="icon"><use href="#i-calendar"/></svg>月別</button>
+          <button class="nav-link" data-page="genres"><svg class="icon"><use href="#i-tag"/></svg>ジャンル別</button>
+        </nav>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="sidebar-rule"></div>
+        <button class="nav-link" data-page="trash"><svg class="icon"><use href="#i-trash"/></svg>ごみ箱 <span class="trash-count" id="trash-count">0</span></button>
+        <p class="side-motto">今日も少しずつ、前へ。<br>1つずつ終わらせていこう。</p>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="header">
+        <div>
+          <p class="eyebrow">PERSONAL TASK SPACE</p>
+          <h1>やること一覧</h1>
+          <p class="header-subtitle">予定を見渡して、今日の「やること」をすっきり整理。</p>
+        </div>
+        <div class="today-date"><svg class="icon"><use href="#i-calendar"/></svg>2026年10月28日（水）</div>
+      </header>
+      <section class="toolbar" aria-label="表示形式の切り替え">
+        <div class="mode-switch" role="tablist" aria-label="表示形式">
+          <button class="mode-btn active" role="tab" aria-selected="true" data-view="day">日次</button>
+          <button class="mode-btn" role="tab" aria-selected="false" data-view="week">週次</button>
+          <button class="mode-btn" role="tab" aria-selected="false" data-view="month">月次</button>
+        </div>
+        <div class="toolbar-note"><span class="emoji">🌤️</span><span>天気は当日から7日間表示 <span style="color:#b1b9bb">（サンプル）</span></span></div>
+      </section>
+      <div id="content" aria-live="polite"></div>
+      <div class="footer-note">※ これは画面デザイン確認用のモックアップです。天気は仮データです。タスクの変更はこのブラウザにのみ保存され、Spring Boot / MySQLには送信されません。</div>
+    </main>
+  </div>
+
+  <dialog id="task-dialog">
+    <form id="task-form" class="dialog-body">
+      <div class="dialog-header"><h2 class="dialog-title" id="task-dialog-title">新規タスクを登録</h2><button type="button" class="close-btn" data-action="close-task" aria-label="閉じる"><svg class="icon"><use href="#i-close"/></svg></button></div>
+      <div class="form-field"><label for="task-name">やることの名前</label><input id="task-name" name="task-name" type="text" placeholder="例：ポートフォリオを見直す" maxlength="120" required></div>
+      <div class="form-row">
+        <div class="form-field"><label for="task-genre">ジャンル</label><select id="task-genre" name="task-genre"><option>マーケティング</option><option>就職活動</option><option>プログラミング</option><option>デザイン</option><option>資格</option></select></div>
+        <div class="form-field"><label for="task-priority">優先度</label><select id="task-priority" name="task-priority"><option>高</option><option selected>中</option><option>低</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label for="task-date">期限</label><input id="task-date" name="task-date" type="date" required></div>
+        <div class="form-field"><label for="task-status">状態</label><select id="task-status" name="task-status"><option>未着手</option><option>進行中</option><option>完了</option></select></div>
+      </div>
+      <div class="dialog-actions"><button type="button" class="btn-secondary" data-action="close-task">キャンセル</button><button class="btn-primary" type="submit" id="task-submit">登録する</button></div>
+    </form>
+  </dialog>
+  <dialog id="delete-dialog"><div class="dialog-body"><div class="dialog-header"><h2 class="dialog-title">ごみ箱に移動しますか？</h2><button class="close-btn" data-action="close-delete" aria-label="閉じる"><svg class="icon"><use href="#i-close"/></svg></button></div><p class="delete-copy" id="delete-message"></p><div class="dialog-actions"><button class="btn-secondary" data-action="close-delete">キャンセル</button><button class="btn-primary btn-danger" data-action="confirm-delete">ごみ箱に移動</button></div></div></dialog>
+  <div id="toast" class="notice" role="status"></div>
+  <script>
+    'use strict';
+    const DEMO_TODAY = '2026-10-28';
+    const SAMPLE_TASKS = [
+      {id:1,name:'Spring BootのTodoアプリを改善する',genre:'プログラミング',priority:'高',date:'2026-10-28',status:'進行中',deleted:false},
+      {id:2,name:'応募先企業の情報を整理する',genre:'就職活動',priority:'中',date:'2026-10-28',status:'未着手',deleted:false},
+      {id:3,name:'ポートフォリオの配色を見直す',genre:'デザイン',priority:'低',date:'2026-10-28',status:'完了',deleted:false},
+      {id:4,name:'マーケティングの学習ノートを整理する',genre:'マーケティング',priority:'中',date:'2026-10-29',status:'未着手',deleted:false},
+      {id:5,name:'資格の模擬問題を30問解く',genre:'資格',priority:'高',date:'2026-10-30',status:'未着手',deleted:false},
+      {id:6,name:'LPのワイヤーフレームを描く',genre:'デザイン',priority:'高',date:'2026-10-31',status:'未着手',deleted:false},
+      {id:7,name:'Javaの学習ノートを復習する',genre:'プログラミング',priority:'中',date:'2026-11-01',status:'未着手',deleted:false},
+      {id:8,name:'面接での質問への回答をまとめる',genre:'就職活動',priority:'高',date:'2026-11-02',status:'未着手',deleted:false},
+      {id:9,name:'SNS投稿の分析メモを作る',genre:'マーケティング',priority:'低',date:'2026-11-03',status:'未着手',deleted:false},
+      {id:10,name:'職務経歴書を推敲する',genre:'就職活動',priority:'高',date:'2026-10-20',status:'完了',deleted:false},
+      {id:11,name:'APIの接続テストをする',genre:'プログラミング',priority:'中',date:'2026-10-27',status:'完了',deleted:false},
+      {id:12,name:'デザインカンプを仕上げる',genre:'デザイン',priority:'中',date:'2026-11-07',status:'未着手',deleted:false}
+    ];
+    // 天気予報の表示例。実際の予報は取得していません。
+    const WEATHER = {
+      '2026-10-28':{emoji:'☀️',name:'晴れ',high:22,low:14},
+      '2026-10-29':{emoji:'⛅',name:'晴れ時々曇り',high:20,low:13},
+      '2026-10-30':{emoji:'🌦️',name:'にわか雨',high:18,low:12},
+      '2026-10-31':{emoji:'☁️',name:'曇り',high:19,low:13},
+      '2026-11-01':{emoji:'🌤️',name:'晴れ時々曇り',high:21,low:14},
+      '2026-11-02':{emoji:'☀️',name:'晴れ',high:22,low:15},
+      '2026-11-03':{emoji:'🌧️',name:'雨',high:17,low:11}
+    };
+    const GENRES = ['マーケティング','就職活動','プログラミング','デザイン','資格'];
+    const GENRE_CLASSES = {'マーケティング':'marketing','就職活動':'job','プログラミング':'programming','デザイン':'design','資格':'cert'};
+    const GENRE_COLORS = {'マーケティング':'#e6bf72','就職活動':'#b397ce','プログラミング':'#78a4d1','デザイン':'#e1a4aa','資格':'#83b696'};
+    const STORE_KEY = 'taskly_visual_demo_20261028_v1';
+    function loadTasks() { try { const value = JSON.parse(localStorage.getItem(STORE_KEY)); if(Array.isArray(value)) return value; }catch(e){} return structuredClone(SAMPLE_TASKS); }
+    let tasks = loadTasks(), view = 'day', page = 'calendar', selectedDate = DEMO_TODAY, genreFilter = 'すべて', editingId = null, deletingId = null;
+    const $ = (sel, base=document) => base.querySelector(sel);
+    const $$ = (sel, base=document) => Array.from(base.querySelectorAll(sel));
+    const escapeHtml = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function icon(name) { return `<svg class="icon" aria-hidden="true"><use href="#i-${name}"/></svg>`; }
+    function toDate(s) { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+    function iso(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+    function moveDate(s,n) { const d=toDate(s); d.setDate(d.getDate()+n); return iso(d); }
+    function moveMonth(s,n) { const d=toDate(s); d.setDate(1); d.setMonth(d.getMonth()+n); return iso(d); }
+    const WEEKDAYS = ['日','月','火','水','木','金','土'];
+    function dateLabel(s,weekday=true) { const d=toDate(s); return `${d.getMonth()+1}月${d.getDate()}日${weekday?`（${WEEKDAYS[d.getDay()]}）`:''}`; }
+    function weekStart(s) { const d=toDate(s); d.setDate(d.getDate()-d.getDay()); return iso(d); }
+    function persist() { try {localStorage.setItem(STORE_KEY,JSON.stringify(tasks));}catch(e){} }
+    function visibleTasks() {return tasks.filter(x=>!x.deleted);}
+    function sortTasks(items) {return items.slice().sort((a,b)=>a.date.localeCompare(b.date)||({高:0,中:1,低:2}[a.priority]-{高:0,中:1,低:2}[b.priority])||a.id-b.id);}
+    function weatherButton(s) {const w=WEATHER[s]; if(!w)return '';const label=`${dateLabel(s,false)} ${w.name}・最高${w.high}℃ / 最低${w.low}℃（サンプル）`;return `<button type="button" class="weather" title="${label}" data-tooltip="${label}" aria-label="${label}">${w.emoji}</button>`;}
+    function statusClass(status) {return status==='完了'?'status-done':status==='進行中'?'status-progress':'status-todo';}
+    function genreChip(genre) {return `<span class="genre-chip genre-${GENRE_CLASSES[genre]||'marketing'}">${escapeHtml(genre)}</span>`;}
+    function priorityHTML(priority) {return `<span class="priority ${priority==='高'?'priority-high':priority==='中'?'priority-mid':'priority-low'}"><span class="dot"></span>${escapeHtml(priority)}</span>`;}
+    function taskCard(t,trash=false) {
+      return `<article class="task-card ${t.status==='完了'?'done':''}">
+        <div>
+          <div class="task-card-top">
+            ${trash?`<span style="color:#a9b6b8">${icon('trash')}</span>`:`<button class="complete-toggle ${t.status==='完了'?'completed':''}" data-action="toggle" data-id="${t.id}" aria-label="${escapeHtml(t.name)}を${t.status==='完了'?'未着手':'完了'}にする">${t.status==='完了'?icon('check'):''}</button>`}
+            <h3 class="task-name">${escapeHtml(t.name)}</h3>
+          </div>
+          <div class="task-fields">
+            <div class="field"><span class="field-label">ジャンル</span>${genreChip(t.genre)}</div>
+            <div class="field"><span class="field-label">優先度</span>${priorityHTML(t.priority)}</div>
+            <div class="field"><span class="field-label">期限</span><span class="field-value">${dateLabel(t.date)}</span></div>
+            <div class="field"><span class="field-label">状態</span><span class="status ${statusClass(t.status)}">${escapeHtml(t.status)}</span></div>
+          </div>
+        </div>
+        <div class="task-actions">
+          ${trash?`<button class="small-action" data-action="restore" data-id="${t.id}">${icon('restore')}復元</button><button class="small-action delete" data-action="purge" data-id="${t.id}">${icon('trash')}完全削除</button>`:`<button class="small-action" data-action="edit" data-id="${t.id}">${icon('edit')}編集</button><button class="small-action delete" data-action="delete" data-id="${t.id}">${icon('trash')}削除</button>`}
+        </div>
+      </article>`;
+    }
+    function periodControls(title, total='') {
+      return `<div class="content-top"><div class="period-group"><h2 class="period-title">${title}</h2><div class="period-controls"><button class="icon-btn" data-action="prev" aria-label="前の期間">${icon('left')}</button><button class="icon-btn" data-action="next" aria-label="次の期間">${icon('right')}</button><button class="today-btn" data-action="today">今日</button></div></div><span class="total-count">${total}</span></div>`;
+    }
+    function emptyState(title='この日のタスクはありません',subtitle='「新規登録」からタスクを追加できます。') { return `<div class="empty-box"><span class="empty-emoji">📝</span><strong>${title}</strong><p>${subtitle}</p></div>`; }
+    function renderDay() {
+      const todays=sortTasks(visibleTasks().filter(t=>t.date===selectedDate));
+      const completed=todays.filter(t=>t.status==='完了').length;
+      const percent=todays.length?Math.round(completed/todays.length*100):0;
+      return periodControls(`${dateLabel(selectedDate)} ${weatherButton(selectedDate)}`,`${todays.length}件のタスク`)+
+        `<div class="progress-box"><span class="progress-box-left">${icon('spark')}この日の進捗：${todays.length-completed}件が未完了</span><div class="progress-box-right"><span>${completed} / ${todays.length} 完了</span><div class="progress-track"><div class="progress-fill" style="width:${percent}%"></div></div></div></div>`+
+        (todays.length?`<div class="task-list">${todays.map(t=>taskCard(t)).join('')}</div>`:emptyState());
+    }
+    function calendarTask(t) {return `<div class="calendar-task ${GENRE_CLASSES[t.genre]}" title="${escapeHtml(t.name)}">${escapeHtml(t.name)}</div>`;}
+    function renderWeek() {
+      const first=weekStart(selectedDate),last=moveDate(first,6);
+      const weekTasks=visibleTasks().filter(t=>t.date>=first&&t.date<=last);
+      const title=`${dateLabel(first,false)} 〜 ${dateLabel(last,false)}`;
+      const html=Array.from({length:7},(_,i)=>{
+        const s=moveDate(first,i),d=toDate(s), ts=sortTasks(weekTasks.filter(t=>t.date===s));
+        return `<div class="week-day ${s===DEMO_TODAY?'today':''}" data-action="open-date" data-date="${s}" tabindex="0" role="button" aria-label="${dateLabel(s)}のタスクを見る"><div class="week-day-head"><span class="week-name">${WEEKDAYS[d.getDay()]}曜日</span><div class="week-date-line"><span class="week-date">${d.getDate()}</span>${weatherButton(s)}</div></div>${ts.length?ts.map(t=>calendarTask(t)).join(''):'<div class="week-empty">予定なし</div>'}</div>`;
+      }).join('');
+      return periodControls(title,`${weekTasks.length}件のタスク`)+`<div class="calendar"><div class="week-grid">${html}</div></div>`;
+    }
+    function renderMonth() {
+      const date=toDate(selectedDate),year=date.getFullYear(),month=date.getMonth();
+      const firstDay=new Date(year,month,1), firstGrid=new Date(year,month,1-firstDay.getDay());
+      const daysInMonth=new Date(year,month+1,0).getDate();
+      const numCells=Math.ceil((firstDay.getDay()+daysInMonth)/7)*7;
+      const monthStart=iso(firstDay), monthEnd=iso(new Date(year,month+1,0));
+      const count=visibleTasks().filter(t=>t.date>=monthStart&&t.date<=monthEnd).length;
+      const weekdays=`<div class="weekday-row">${WEEKDAYS.map(w=>`<div class="weekday-cell">${w}</div>`).join('')}</div>`;
+      const cells=Array.from({length:numCells},(_,i)=>{
+        const d=new Date(firstGrid);d.setDate(firstGrid.getDate()+i);const s=iso(d),inMonth=d.getMonth()===month,ts=sortTasks(visibleTasks().filter(t=>t.date===s));
+        return `<div class="month-day ${inMonth?'':'outside'} ${s===DEMO_TODAY?'today':''}" data-action="open-date" data-date="${s}" role="button" tabindex="0" aria-label="${dateLabel(s)}のタスクを見る"><div class="date-line"><span class="date-num">${d.getDate()}</span>${weatherButton(s)}</div>${ts.map(t=>calendarTask(t)).join('')}</div>`;
+      }).join('');
+      return periodControls(`${year}年${month+1}月`,`${count}件のタスク`)+`<div class="calendar">${weekdays}<div class="month-grid">${cells}</div></div>`;
+    }
+    function renderGenres() {
+      const count=visibleTasks().length;
+      const chips=`<div class="genre-filter"><button class="filter-chip ${genreFilter==='すべて'?'active':''}" data-action="genre-filter" data-genre="すべて">すべて (${count})</button>${GENRES.map(g=>`<button class="filter-chip ${genreFilter===g?'active':''}" data-action="genre-filter" data-genre="${g}"><span class="tiny-dot" style="background:${GENRE_COLORS[g]}"></span>${g} (${visibleTasks().filter(t=>t.genre===g).length})</button>`).join('')}</div>`;
+      const groups=GENRES.filter(g=>genreFilter==='すべて'||genreFilter===g).map(g=>{
+        const ts=sortTasks(visibleTasks().filter(t=>t.genre===g));
+        if(!ts.length)return '';
+        return `<section class="genre-group"><div class="genre-group-title"><span class="square" style="--genre-color:${GENRE_COLORS[g]}"></span>${g}<span class="count">${ts.length}件</span></div><div class="task-list">${ts.map(t=>taskCard(t)).join('')}</div></section>`;
+      }).join('');
+      return `<div class="content-top"><h2 class="period-title">ジャンル別のタスク</h2><span class="total-count">${count}件のタスク</span></div>${chips}${groups||emptyState('タスクはありません','ジャンルを切り替えるか、新規登録してください。')}`;
+    }
+    function renderTrash() {
+      const list=tasks.filter(t=>t.deleted).slice().reverse();
+      return `<div class="content-top"><h2 class="period-title">ごみ箱</h2><span class="total-count">${list.length}件</span></div>${list.length?`<div class="task-list">${list.map(t=>taskCard(t,true)).join('')}</div>`:emptyState('ごみ箱は空です','削除したタスクはこちらに表示されます。')}`;
+    }
+    function render() {
+      $('#content').innerHTML=page==='trash'?renderTrash():page==='genres'?renderGenres():view==='day'?renderDay():view==='week'?renderWeek():renderMonth();
+      $$('.mode-btn').forEach(btn=>{const active=page==='calendar'&&view===btn.dataset.view;btn.classList.toggle('active',active);btn.setAttribute('aria-selected',String(active));});
+      $$('.nav-link[data-page]').forEach(btn=>{const active=btn.dataset.page===(page==='calendar'?(view==='month'?'month':'day'):page);btn.classList.toggle('active',active);});
+      $('#trash-count').textContent=tasks.filter(t=>t.deleted).length;
+    }
+    const form=$('#task-form'), taskDialog=$('#task-dialog'), deleteDialog=$('#delete-dialog');
+    function showTask(id=null) {
+      editingId=id;
+      const data=id===null?{name:'',genre:'プログラミング',priority:'中',date:selectedDate,status:'未着手'}:tasks.find(t=>t.id===id);
+      if(!data)return;
+      $('#task-dialog-title').textContent=id===null?'新規タスクを登録':'タスクを編集';
+      $('#task-submit').textContent=id===null?'登録する':'変更を保存';
+      $('#task-name').value=data.name;$('#task-genre').value=data.genre;$('#task-priority').value=data.priority;$('#task-date').value=data.date;$('#task-status').value=data.status;
+      taskDialog.showModal();$('#task-name').focus();
+    }
+    form.addEventListener('submit',e=>{
+      e.preventDefault();
+      const name=$('#task-name').value.trim();if(!name){$('#task-name').focus();return;}
+      const data={name,genre:$('#task-genre').value,priority:$('#task-priority').value,date:$('#task-date').value,status:$('#task-status').value};
+      if(editingId===null){tasks.push({id:Math.max(0,...tasks.map(x=>x.id))+1,...data,deleted:false}); selectedDate=data.date;page='calendar';view='day';toast('新しいタスクを登録しました');}
+      else {Object.assign(tasks.find(t=>t.id===editingId),data);toast('タスクを更新しました');}
+      persist();taskDialog.close();render();
+    });
+    let toastTimer=0;
+    function toast(text) {const el=$('#toast');el.textContent=text;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2400);}
+    document.addEventListener('click',e=>{
+      // ツールチップ上のクリックが日付の切替に伝播しないようにする
+      if(e.target.closest('.weather')) {e.stopPropagation();return;}
+      const viewBtn=e.target.closest('[data-view]');if(viewBtn){view=viewBtn.dataset.view;page='calendar';render();return;}
+      const pageBtn=e.target.closest('[data-page]');if(pageBtn){const next=pageBtn.dataset.page;if(next==='day'){page='calendar';view='day';}else if(next==='month'){page='calendar';view='month';}else{page=next;}render();return;}
+      const el=e.target.closest('[data-action]');if(!el)return;
+      const action=el.dataset.action,id=Number(el.dataset.id);
+      switch(action){
+        case 'new': showTask();break;
+        case 'edit': showTask(id);break;
+        case 'close-task': taskDialog.close();break;
+        case 'close-delete': deleteDialog.close();break;
+        case 'delete': deletingId=id;$('#delete-message').textContent=`「${tasks.find(t=>t.id===id)?.name||'このタスク'}」を削除し、ごみ箱に移動します。`;deleteDialog.showModal();break;
+        case 'confirm-delete': {const t=tasks.find(t=>t.id===deletingId);if(t){t.deleted=true;persist();render();toast('ごみ箱に移動しました');}deleteDialog.close();break;}
+        case 'purge': if(confirm('このタスクを完全に削除しますか？')){tasks=tasks.filter(t=>t.id!==id);persist();render();toast('タスクを完全に削除しました');}break;
+        case 'restore': {const t=tasks.find(t=>t.id===id);if(t){t.deleted=false;persist();render();toast('タスクを復元しました');}break;}
+        case 'toggle': {const t=tasks.find(t=>t.id===id);if(t){t.status=t.status==='完了'?'未着手':'完了';persist();render();toast('状態を変更しました');}break;}
+        case 'prev': selectedDate=view==='day'?moveDate(selectedDate,-1):view==='week'?moveDate(selectedDate,-7):moveMonth(selectedDate,-1);render();break;
+        case 'next': selectedDate=view==='day'?moveDate(selectedDate,1):view==='week'?moveDate(selectedDate,7):moveMonth(selectedDate,1);render();break;
+        case 'today': selectedDate=DEMO_TODAY;render();break;
+        case 'open-date': selectedDate=el.dataset.date;page='calendar';view='day';render();break;
+        case 'genre-filter': genreFilter=el.dataset.genre;render();break;
+      }
+    });
+    document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-action="open-date"]')){e.preventDefault();e.target.click();}});
+    render();
+  </script>
+</body>
+</html>
