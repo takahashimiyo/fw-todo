@@ -10,7 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class WeatherApiController {
 
-    private final WeatherClient weatherClient = new WeatherClient();
+    private final WeatherClient weatherClient;
+
+    public WeatherApiController(WeatherClient weatherClient) {
+        this.weatherClient = weatherClient;
+    }
 
     @GetMapping("/api/weather")
     public ResponseEntity<Map<String, Object>> getWeather() {

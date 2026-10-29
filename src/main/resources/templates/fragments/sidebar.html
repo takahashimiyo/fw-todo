@@ -12,8 +12,8 @@
             <a class="nav-link" th:classappend="${active == 'new' ? ' is-active' : ''}" href="/todos/new"><span class="nav-icon" aria-hidden="true">＋</span>新規登録</a>
             <a class="nav-link" th:classappend="${active == 'todos' ? ' is-active' : ''}" href="/todos"><span class="nav-icon" aria-hidden="true">▤</span>一覧でみる</a>
             <div class="nav-submenu" aria-label="一覧の表示方法">
-                <a class="nav-link nav-child" th:classappend="${active == 'day' ? ' is-active' : ''}" href="/calendar?view=week">日別</a>
-                <a class="nav-link nav-child" th:classappend="${active == 'month' ? ' is-active' : ''}" href="/calendar">月別</a>
+                <a class="nav-link nav-child" th:classappend="${active == 'day' ? ' is-active' : ''}" href="/calendar?view=day">日別</a>
+                <a class="nav-link nav-child" th:classappend="${active == 'month' ? ' is-active' : ''}" href="/calendar?view=month">月別</a>
                 <a class="nav-link nav-child" th:classappend="${active == 'genre' ? ' is-active' : ''}" href="/todos/genres">ジャンル別</a>
             </div>
             <a class="nav-link" th:classappend="${active == 'trash' ? ' is-active' : ''}" href="/todos?trash=1"><span class="nav-icon" aria-hidden="true">▱</span>ごみ箱</a>

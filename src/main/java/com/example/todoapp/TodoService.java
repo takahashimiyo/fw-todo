@@ -22,6 +22,10 @@ public class TodoService {
         return todoMapper.search(keyword, category, order, from, to, true, false, Integer.MAX_VALUE, 0);
     }
 
+    public List<Todo> findUndatedActiveTodos() {
+        return todoMapper.findUndatedActiveTodos();
+    }
+
     public List<Todo> search(String keyword, String category, String order) {
         return search(keyword, category, order, null, null);
     }

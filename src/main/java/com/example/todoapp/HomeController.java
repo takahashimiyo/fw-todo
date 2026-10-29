@@ -11,6 +11,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Controller
 public class HomeController {
 
@@ -59,7 +65,35 @@ public class HomeController {
     }
 
     @GetMapping("/todos/genres")
-    public String genres() {
+    public String genres(@RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "すべて") String category,
+            @RequestParam(defaultValue = "true") boolean showCompleted, Model model) {
+        List<String> standardCategories = List.of("マーケティング", "就職活動", "プログラミング", "デザイン", "資格");
+        List<Todo> allTodos = todoService.search("", "", "asc");
+
+        // Keep categories already used in the database visible, even when they are not in the standard set.
+        List<String> categories = new ArrayList<>(standardCategories);
+        allTodos.stream().map(Todo::getCategory).filter(value -> value != null && !value.isBlank())
+                .filter(value -> !categories.contains(value)).sorted().forEach(categories::add);
+
+        String normalizedKeyword = keyword.trim().toLowerCase(java.util.Locale.ROOT);
+        List<Todo> filteredTodos = allTodos.stream()
+                .filter(todo -> normalizedKeyword.isEmpty()
+                        || (todo.getTitle() != null && todo.getTitle().toLowerCase(java.util.Locale.ROOT).contains(normalizedKeyword)))
+                .filter(todo -> "すべて".equals(category) || category.equals(todo.getCategory()))
+                .filter(todo -> showCompleted || !Boolean.TRUE.equals(todo.getCompleted()))
+                .collect(Collectors.toList());
+
+        Map<String, List<Todo>> genreGroups = new LinkedHashMap<>();
+        categories.forEach(value -> genreGroups.put(value, new ArrayList<>()));
+        filteredTodos.forEach(todo -> genreGroups.computeIfAbsent(todo.getCategory(), key -> new ArrayList<>()).add(todo));
+
+        model.addAttribute("categories", categories);
+        model.addAttribute("genreGroups", genreGroups);
+        model.addAttribute("filteredCount", filteredTodos.size());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("category", category);
+        model.addAttribute("showCompleted", showCompleted);
         return "genres";
     }
 

@@ -4,158 +4,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>カレンダー</title>
+    <title>カレンダー | My Todo</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
 <body>
-    <div class="app-layout"><aside th:replace="~{fragments/sidebar :: sidebar(${weekView ? 'day' : 'month'})}"></aside>
-    <main class="container content-card calendar-container">
-        <p class="eyebrow">MY TODO / カレンダー</p>
-        <h1 class="page-title" th:text="${title}">カレンダー</h1>
-        <nav class="calendar-navigation" aria-label="月の移動">
-            <div class="calendar-navigation-group">
-                <a class="link" th:if="${weekView}" th:href="@{/calendar(view='week',date=${previousWeekDate})}">前の週</a>
-                <a class="link" th:unless="${weekView}" th:href="@{/calendar(year=${previousYear},month=${previousMonth})}">前の月</a>
-                <a class="link" th:if="${weekView}" th:href="@{/calendar(view='week',date=${nextWeekDate})}">次の週</a>
-                <a class="link" th:unless="${weekView}" th:href="@{/calendar(year=${nextYear},month=${nextMonth})}">次の月</a>
-            </div>
-            <div class="calendar-navigation-group">
-                <a class="link" th:if="${weekView}" th:href="@{/calendar(year=${year},month=${month})}">月表示</a>
-                <a class="link" th:unless="${weekView}" th:href="@{/calendar(view='week',date=${switchDate})}">週表示</a>
-                <a class="link" href="/todos">表で見る</a>
-                <a class="link" href="/todos/new">新規登録</a>
-            </div>
-        </nav>
-        <table class="calendar-table" th:classappend="${weekView} ? 'week-view' : ''"
-            th:attr="data-from=${firstDay},data-to=${lastDay},data-view=${weekView ? 'week' : 'month'}">
-            <thead>
-                <tr>
-                    <th scope="col">日</th>
-                    <th scope="col">月</th>
-                    <th scope="col">火</th>
-                    <th scope="col">水</th>
-                    <th scope="col">木</th>
-                    <th scope="col">金</th>
-                    <th scope="col">土</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="week : ${#numbers.sequence(0, days.size() / 7 - 1)}">
-                    <td th:each="day : ${days.subList(week * 7, week * 7 + 7)}" th:attr="data-date=${day}"
-                        th:text="${day == null ? '' : day.dayOfMonth}"></td>
-                </tr>
-            </tbody>
-        </table>
-    </main></div>
+    <div class="app-layout">
+        <aside th:replace="~{fragments/sidebar :: sidebar(${activeMenu})}"></aside>
+        <main class="container content-card calendar-container">
+            <p class="eyebrow">MY TODO / カレンダー</p>
+            <h1 class="page-title" th:text="${title}">カレンダー</h1>
+
+            <nav class="calendar-tabs" aria-label="表示方法">
+                <a th:href="@{/calendar(view='day',date=${focusDate})}" th:classappend="${selectedView == 'day'} ? ' is-active' : ''" th:attr="aria-current=${selectedView == 'day' ? 'page' : null}">日次</a>
+                <a th:href="@{/calendar(view='week',date=${focusDate})}" th:classappend="${selectedView == 'week'} ? ' is-active' : ''" th:attr="aria-current=${selectedView == 'week' ? 'page' : null}">週次</a>
+                <a th:href="@{/calendar(view='month',date=${focusDate})}" th:classappend="${selectedView == 'month'} ? ' is-active' : ''" th:attr="aria-current=${selectedView == 'month' ? 'page' : null}">月次</a>
+            </nav>
+
+            <nav class="calendar-navigation" aria-label="日付の移動">
+                <div class="calendar-navigation-group">
+                    <a class="btn sub" th:href="@{/calendar(view=${selectedView},date=${previousDate})}">← 前へ</a>
+                    <a class="btn sub" th:href="@{/calendar(view=${selectedView},date=${nextDate})}">次へ →</a>
+                    <a class="link today-link" th:href="@{/calendar(view=${selectedView},date=${today})}">今日に戻る</a>
+                </div>
+                <a class="btn" href="/todos/new">＋ タスクを追加</a>
+            </nav>
+
+            <section th:if="${selectedView == 'day'}" aria-label="日次タスク">
+                <div class="stats-grid">
+                    <div class="stat-card"><span>タスク総数</span><strong th:text="${totalCount}">0</strong></div>
+                    <div class="stat-card"><span>完了</span><strong th:text="${completedCount}">0</strong></div>
+                    <div class="stat-card"><span>未完了</span><strong th:text="${remainingCount}">0</strong></div>
+                    <div class="stat-card"><span>進捗率</span><strong><span th:text="${progress}">0</span>%</strong></div>
+                </div>
+                <div class="progress-track" role="progressbar" aria-label="タスク進捗" th:attr="aria-valuenow=${progress},aria-valuemin=0,aria-valuemax=100"><span th:style="|width:${progress}%|"></span></div>
+
+                <h2 class="section-title">この日のタスク</h2>
+                <p class="empty-state" th:if="${#lists.isEmpty(dayTodos)}">この日に期限があるタスクはありません。</p>
+                <div class="day-task-list" th:unless="${#lists.isEmpty(dayTodos)}">
+                    <article class="day-task-card" th:each="todo : ${dayTodos}" th:classappend="${todo.completed} ? ' is-complete' : ''">
+                        <span class="task-check" aria-hidden="true" th:text="${todo.completed} ? '✓' : '○'">○</span>
+                        <div class="task-main">
+                            <h3 th:text="${todo.title}">タスク名</h3>
+                            <div class="task-meta">
+                                <span class="task-tag" th:text="${todo.category}">ジャンル</span>
+                                <span>優先度：<strong th:text="${todo.priority == 1 ? '高' : (todo.priority == 2 ? '中' : '低')}">中</strong></span>
+                                <span>期限：<time th:text="${todo.dueDate}">日付</time></span>
+                                <span class="status-pill" th:classappend="${todo.completed} ? ' is-complete' : ''" th:text="${todo.completed} ? '完了' : '未完了'">未完了</span>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <a class="btn sub" th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a>
+                            <a class="link delete-link" th:href="@{/todos/{id}/delete(id=${todo.id})}">削除</a>
+                        </div>
+                    </article>
+                </div>
+
+                <section class="undated-section" th:if="${focusDate == today}">
+                    <div class="section-heading"><div><h2 class="section-title">期限未設定</h2><p>期限を設定していないタスク</p></div><span class="count-badge" th:text="${#lists.size(undatedTodos)} + '件'">0件</span></div>
+                    <p class="empty-state" th:if="${#lists.isEmpty(undatedTodos)}">期限未設定のタスクはありません。</p>
+                    <div class="day-task-list" th:unless="${#lists.isEmpty(undatedTodos)}">
+                        <article class="day-task-card" th:each="todo : ${undatedTodos}" th:classappend="${todo.completed} ? ' is-complete' : ''">
+                            <span class="task-check" aria-hidden="true" th:text="${todo.completed} ? '✓' : '○'">○</span>
+                            <div class="task-main"><h3 th:text="${todo.title}">タスク名</h3><div class="task-meta"><span class="task-tag" th:text="${todo.category}">ジャンル</span><span>優先度：<strong th:text="${todo.priority == 1 ? '高' : (todo.priority == 2 ? '中' : '低')}">中</strong></span><span class="status-pill" th:classappend="${todo.completed} ? ' is-complete' : ''" th:text="${todo.completed} ? '完了' : '未完了'">未完了</span></div></div>
+                            <div class="task-actions"><a class="btn sub" th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a><a class="link delete-link" th:href="@{/todos/{id}/delete(id=${todo.id})}">削除</a></div>
+                        </article>
+                    </div>
+                </section>
+            </section>
+
+            <p class="weather-status" role="status" aria-live="polite" th:if="${selectedView == 'week' or selectedView == 'month'}">天気予報を読み込み中…</p>
+            <table class="calendar-table week-view" th:if="${selectedView == 'week'}" th:attr="data-from=${firstDay},data-to=${lastDay}">
+                <thead><tr><th scope="col">日</th><th scope="col">月</th><th scope="col">火</th><th scope="col">水</th><th scope="col">木</th><th scope="col">金</th><th scope="col">土</th></tr></thead>
+                <tbody><tr><td th:each="day : ${days}" th:attr="data-date=${day}" th:classappend="${day == today} ? ' is-today' : ''">
+                    <a class="calendar-day-link" th:href="@{/calendar(view='day',date=${day})}"><time th:datetime="${day}" th:text="${day.dayOfMonth}">1</time></a>
+                    <ul class="calendar-tasks"><li th:each="todo : ${todosByDate[day.toString()]}"><a th:href="@{/calendar(view='day',date=${day})}" th:text="${todo.title}">タスク名</a></li></ul>
+                </td></tr></tbody>
+            </table>
+
+            <table class="calendar-table month-view" th:if="${selectedView == 'month'}" th:attr="data-from=${firstDay},data-to=${lastDay}">
+                <thead><tr><th scope="col">日</th><th scope="col">月</th><th scope="col">火</th><th scope="col">水</th><th scope="col">木</th><th scope="col">金</th><th scope="col">土</th></tr></thead>
+                <tbody><tr th:each="week : ${#numbers.sequence(0, days.size() / 7 - 1)}"><td th:each="day : ${days.subList(week * 7, week * 7 + 7)}" th:attr="data-date=${day}" th:classappend="${day == null ? '' : (day == today ? ' is-today' : '')}">
+                    <th:block th:if="${day != null}"><a class="calendar-day-link" th:href="@{/calendar(view='day',date=${day})}"><time th:datetime="${day}" th:text="${day.dayOfMonth}">1</time></a>
+                    <ul class="calendar-tasks"><li th:each="todo, iter : ${todosByDate[day.toString()]}" th:if="${iter.index < 3}"><a th:href="@{/calendar(view='day',date=${day})}" th:text="${todo.title}">タスク名</a></li></ul>
+                    <p class="calendar-more" th:if="${todosByDate[day.toString()] != null and #lists.size(todosByDate[day.toString()]) > 3}" th:text="|ほか${#lists.size(todosByDate[day.toString()]) - 3}件|">ほか1件</p></th:block>
+                </td></tr></tbody>
+            </table>
+            <p class="holiday-note">祝日はカレンダー内で色分けして表示します。</p>
+        </main>
+    </div>
     <script>
-        async function showTodos() {
-            const calendar = document.querySelector(".calendar-table");
-            const from = calendar.dataset.from;
-            const to = calendar.dataset.to;
-            const weekView = calendar.dataset.view === "week";
-            const params = new URLSearchParams({ from, to });
-            const res = await fetch(`/api/todos?${params}`);
-            const todos = await res.json();
-            const now = new Date();
-            const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+        const weatherLabels = new Map([
+            [0, ["☀️", "晴れ"]], [1, ["☀️", "晴れ"]], [2, ["🌤️", "晴れ時々曇り"]],
+            [3, ["☁️", "曇り"]], [45, ["☁️", "曇り"]], [48, ["☁️", "曇り"]],
+            [51, ["🌧️", "雨"]], [53, ["🌧️", "雨"]], [55, ["🌧️", "雨"]], [56, ["🌧️", "雨"]], [57, ["🌧️", "雨"]],
+            [61, ["🌧️", "雨"]], [63, ["🌧️", "雨"]], [65, ["🌧️", "雨"]], [66, ["🌧️", "雨"]], [67, ["🌧️", "雨"]],
+            [71, ["❄️", "雪"]], [73, ["❄️", "雪"]], [75, ["❄️", "雪"]], [77, ["❄️", "雪"]],
+            [80, ["🌧️", "雨"]], [81, ["🌧️", "雨"]], [82, ["🌧️", "雨"]], [85, ["❄️", "雪"]], [86, ["❄️", "雪"]],
+            [95, ["⛈️", "雷雨"]], [96, ["⛈️", "雷雨"]], [99, ["⛈️", "雷雨"]]
+        ]);
 
-            for (const cell of calendar.querySelectorAll("td[data-date]")) {
-                const matchingTodos = todos.filter(todo => todo.dueDate === cell.dataset.date);
-                for (const todo of (weekView ? matchingTodos : matchingTodos.slice(0, 3))) {
-                    const name = document.createElement("a");
-                    name.className = "link";
-                    name.href = `/todos/${todo.id}/edit`;
-                    name.textContent = todo.title;
-                    if (todo.dueDate < today && !todo.completed) {
-                        name.style.color = "red";
-                    }
-                    cell.appendChild(name);
-                }
-                if (!weekView && matchingTodos.length > 3) {
-                    const more = document.createElement("div");
-                    more.textContent = `ほか ${matchingTodos.length - 3}件`;
-                    cell.appendChild(more);
-                }
-            }
-        }
-
-        async function colorSpecialDays() {
-            const calendar = document.querySelector(".calendar-table");
-            const from = calendar.dataset.from;
-            const to = calendar.dataset.to;
-            const params = new URLSearchParams({ from, to });
-            const res = await fetch(`/api/holidays?${params}`);
-
-            if (res.headers.has("X-Holidays-Unavailable")) {
-                const message = document.createElement("p");
-                message.textContent = "祝日を取れませんでした";
-                calendar.parentElement.insertBefore(message, calendar);
-            }
-
-            const holidays = await res.json();
-            for (const cell of calendar.querySelectorAll("td[data-date]")) {
-                const date = new Date(`${cell.dataset.date}T00:00:00`);
-                const weekday = date.getDay();
-
-                if (Object.hasOwn(holidays, cell.dataset.date)) {
-                    cell.style.backgroundColor = "#ffe4b5";
-                    cell.title = holidays[cell.dataset.date];
-                } else if (weekday === 0) {
-                    cell.style.backgroundColor = "#f8d7da";
-                } else if (weekday === 6) {
-                    cell.style.backgroundColor = "#dbeafe";
-                }
-            }
+        function tokyoDateString(date) {
+            const parts = new Intl.DateTimeFormat("en-CA", {
+                timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit"
+            }).formatToParts(date);
+            const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+            return `${values.year}-${values.month}-${values.day}`;
         }
 
         async function showWeather() {
+            const calendar = document.querySelector(".calendar-table");
+            const status = document.querySelector(".weather-status");
+            if (!calendar || !status) return;
             try {
-                const res = await fetch("/api/weather");
-                if (!res.ok || res.headers.has("X-Weather-Unavailable")) {
-                    return;
-                }
+                const response = await fetch("/api/weather");
+                if (!response.ok || response.headers.has("X-Weather-Unavailable")) throw new Error("weather unavailable");
+                const result = await response.json();
+                if (!Array.isArray(result.forecasts)) throw new Error("weather unavailable");
 
-                const weather = await res.json();
-                const weatherTypes = {
-                    0: { icon: "☀️", label: "快晴" }, 1: { icon: "🌤️", label: "晴れ" },
-                    2: { icon: "⛅", label: "くもり時々晴れ" }, 3: { icon: "☁️", label: "くもり" },
-                    45: { icon: "🌫️", label: "霧" }, 48: { icon: "🌫️", label: "霧" },
-                    51: { icon: "🌦️", label: "弱い霧雨" }, 53: { icon: "🌦️", label: "霧雨" },
-                    55: { icon: "🌧️", label: "強い霧雨" }, 56: { icon: "🌧️", label: "凍る霧雨" },
-                    57: { icon: "🌧️", label: "凍る霧雨" }, 61: { icon: "🌧️", label: "弱い雨" },
-                    63: { icon: "🌧️", label: "雨" }, 65: { icon: "🌧️", label: "強い雨" },
-                    66: { icon: "🌧️", label: "凍る雨" }, 67: { icon: "🌧️", label: "凍る雨" },
-                    71: { icon: "🌨️", label: "弱い雪" }, 73: { icon: "🌨️", label: "雪" },
-                    75: { icon: "❄️", label: "強い雪" }, 77: { icon: "🌨️", label: "あられ" },
-                    80: { icon: "🌦️", label: "にわか雨" }, 81: { icon: "🌧️", label: "雨" },
-                    82: { icon: "🌧️", label: "強いにわか雨" }, 85: { icon: "🌨️", label: "にわか雪" },
-                    86: { icon: "❄️", label: "強いにわか雪" }, 95: { icon: "⛈️", label: "雷雨" },
-                    96: { icon: "⛈️", label: "ひょうを伴う雷雨" }, 99: { icon: "⛈️", label: "強いひょうを伴う雷雨" }
-                };
-                for (const forecast of weather.forecasts ?? []) {
-                    const cell = [...document.querySelectorAll("td[data-date]")]
+                const today = tokyoDateString(new Date());
+                const endDate = new Date(`${today}T00:00:00+09:00`);
+                endDate.setUTCDate(endDate.getUTCDate() + 6);
+                const lastDay = tokyoDateString(endDate);
+                let displayedCount = 0;
+                for (const forecast of result.forecasts) {
+                    if (typeof forecast.date !== "string" || forecast.date < today || forecast.date > lastDay) continue;
+                    const weather = weatherLabels.get(forecast.weatherCode);
+                    if (!weather || !Number.isFinite(forecast.temperatureMax) || !Number.isFinite(forecast.temperatureMin)) continue;
+                    const cell = [...calendar.querySelectorAll("td[data-date]")]
                         .find(dayCell => dayCell.dataset.date === forecast.date);
-                    if (!cell || forecast.weatherCode == null || forecast.temperatureMin == null
-                            || forecast.temperatureMax == null) {
-                        continue;
-                    }
+                    const dateLink = cell?.querySelector(".calendar-day-link");
+                    if (!dateLink || cell.querySelector(".weather-indicator")) continue;
 
-                    const weatherType = weatherTypes[forecast.weatherCode] ?? { icon: "🌡️", label: "天気情報" };
-                    const display = document.createElement("div");
-                    display.textContent = `${weatherType.icon} ${forecast.temperatureMin}° / ${forecast.temperatureMax}°C`;
-                    display.title = `東京の予報: ${weatherType.label}、最低${forecast.temperatureMin}°C、最高${forecast.temperatureMax}°C`;
-                    cell.appendChild(display);
+                    const indicator = document.createElement("span");
+                    indicator.className = "weather-indicator";
+                    const button = document.createElement("button");
+                    const tooltipId = `weather-${forecast.date}`;
+                    button.type = "button";
+                    button.className = "weather-trigger";
+                    button.textContent = weather[0];
+                    button.setAttribute("aria-label", `${forecast.date}の天気：${weather[1]}。気温を表示`);
+                    button.setAttribute("aria-describedby", tooltipId);
+                    button.setAttribute("aria-expanded", "false");
+
+                    const tooltip = document.createElement("span");
+                    tooltip.className = "weather-popover";
+                    tooltip.id = tooltipId;
+                    tooltip.setAttribute("role", "tooltip");
+                    tooltip.textContent = `最高気温：${Math.round(forecast.temperatureMax)}℃　最低気温：${Math.round(forecast.temperatureMin)}℃`;
+                    button.addEventListener("click", () => {
+                        const opening = button.getAttribute("aria-expanded") !== "true";
+                        document.querySelectorAll(".weather-trigger[aria-expanded='true']").forEach(openButton => {
+                            openButton.setAttribute("aria-expanded", "false");
+                        });
+                        button.setAttribute("aria-expanded", String(opening));
+                    });
+                    indicator.append(button, tooltip);
+                    dateLink.after(indicator);
+                    displayedCount++;
                 }
+                status.textContent = displayedCount ? "" : "天気情報なし";
             } catch (error) {
-                // 天気を取得できなくても、カレンダーの表示は続けます。
+                status.textContent = "天気情報なし";
             }
         }
 
-        showTodos();
-        colorSpecialDays();
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                document.querySelectorAll(".weather-trigger[aria-expanded='true']").forEach(button => {
+                    button.setAttribute("aria-expanded", "false");
+                });
+            }
+        });
+
+        async function colorSpecialDays() {
+            const calendar = document.querySelector(".calendar-table");
+            if (!calendar) return;
+            const params = new URLSearchParams({ from: calendar.dataset.from, to: calendar.dataset.to });
+            try {
+                const response = await fetch(`/api/holidays?${params}`);
+                const holidays = await response.json();
+                for (const cell of calendar.querySelectorAll("td[data-date]")) {
+                    const day = new Date(`${cell.dataset.date}T00:00:00`).getDay();
+                    if (Object.hasOwn(holidays, cell.dataset.date)) {
+                        cell.classList.add("is-holiday");
+                        cell.title = holidays[cell.dataset.date];
+                    } else if (day === 0) cell.classList.add("is-sunday");
+                    else if (day === 6) cell.classList.add("is-saturday");
+                }
+            } catch (error) {
+                // 祝日APIが利用できない場合もカレンダーは表示します。
+            }
+        }
         showWeather();
+        colorSpecialDays();
     </script>
 </body>
-
 </html>

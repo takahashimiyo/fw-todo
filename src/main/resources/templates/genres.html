@@ -11,14 +11,57 @@
     <aside th:replace="~{fragments/sidebar :: sidebar('genre')}"></aside>
     <main class="container content-card">
         <p class="eyebrow">MY TODO / ジャンル別</p>
-        <h1 class="page-title">ジャンル別</h1>
-        <section class="notice-card">
-            <span class="notice-icon" aria-hidden="true">✳</span>
+        <div class="page-heading">
             <div>
-                <h2>ジャンル別表示は準備中です</h2>
-                <p>現在のタスク一覧から、ジャンルを指定して絞り込めます。</p>
-                <a class="btn" href="/todos">タスク一覧へ</a>
+                <h1 class="page-title">ジャンル別</h1>
+                <p class="page-description">ジャンルごとにタスクを確認できます。</p>
             </div>
+        </div>
+
+        <form class="list-tools search-bar genre-search" action="/todos/genres" method="get">
+            <label>やることの名前
+                <input class="form-input" type="search" name="keyword" th:value="${keyword}" placeholder="タスク名で検索">
+            </label>
+            <label>ジャンル
+                <select class="form-input" name="category">
+                    <option value="すべて" th:selected="${category == 'すべて'}">すべて</option>
+                    <option th:each="item : ${categories}" th:value="${item}" th:text="${item}"
+                            th:selected="${category == item}"></option>
+                </select>
+            </label>
+            <input type="hidden" name="showCompleted" value="false">
+            <label class="genre-completed-filter">
+                <input type="checkbox" name="showCompleted" value="true" th:checked="${showCompleted}">
+                完了済みも表示
+            </label>
+            <button class="btn" type="submit">検索・絞り込み</button>
+        </form>
+
+        <p class="empty-state" th:if="${filteredCount == 0}">
+            条件に一致するタスクはありません。
+        </p>
+        <section class="genre-grid" aria-label="ジャンルごとのタスク一覧">
+            <article class="genre-card" th:each="genre, iter : ${genreGroups}"
+                     th:if="${category == 'すべて' or category == genre.key}"
+                     th:classappend="${'genre-tone-' + (iter.index % 5)}">
+                <div class="genre-heading">
+                    <h2 th:text="${genre.key}">ジャンル名</h2>
+                    <span class="count-badge"><span th:text="${#lists.size(genre.value)}">0</span>件</span>
+                </div>
+                <p class="genre-empty" th:if="${#lists.isEmpty(genre.value)}">タスクはありません。</p>
+                <ul class="genre-task-list" th:unless="${#lists.isEmpty(genre.value)}">
+                    <li class="genre-task" th:each="todo : ${genre.value}"
+                        th:classappend="${todo.completed ? ' is-complete' : ''}">
+                        <div class="genre-task-main">
+                            <a class="genre-task-title" th:href="@{/todos/{id}/edit(id=${todo.id})}" th:text="${todo.title}">タスク名</a>
+                            <span class="status-pill" th:classappend="${todo.completed ? ' is-complete' : ''}"
+                                  th:text="${todo.completed ? '完了' : '未完了'}">未完了</span>
+                        </div>
+                        <span class="genre-task-date" th:if="${todo.dueDate != null}"
+                              th:text="${'期限: ' + todo.dueDate}">期限</span>
+                    </li>
+                </ul>
+            </article>
         </section>
     </main>
 </div>

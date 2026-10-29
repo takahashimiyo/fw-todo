@@ -14,6 +14,8 @@ public interface TodoMapper {
             @Param("showCompleted") boolean showCompleted, @Param("trash") boolean trash, @Param("limit") int limit,
             @Param("offset") int offset);
 
+    List<Todo> findUndatedActiveTodos();
+
     long countSearch(@Param("keyword") String keyword, @Param("category") String category,
             @Param("from") LocalDate from, @Param("to") LocalDate to,
             @Param("showCompleted") boolean showCompleted);

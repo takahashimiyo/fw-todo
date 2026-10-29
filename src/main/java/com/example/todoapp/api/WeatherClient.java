@@ -3,6 +3,11 @@ package com.example.todoapp.api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
+import java.time.Instant;
+import java.time.ZoneId;
+
+import org.springframework.beans.factory.annotation.Value;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +21,18 @@ import org.springframework.web.client.RestClientException;
 public class WeatherClient {
 
     private static final Logger logger = LoggerFactory.getLogger(WeatherClient.class);
+    private static final ZoneId TOKYO = ZoneId.of("Asia/Tokyo");
+    private static final long CACHE_MILLIS = 30 * 60 * 1000L;
 
     private final RestClient restClient;
+    private final double latitude;
+    private final double longitude;
+    private volatile CachedWeather cache;
 
-    public WeatherClient() {
+    public WeatherClient(@Value("${weather.latitude:35.68}") double latitude,
+            @Value("${weather.longitude:139.76}") double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(3_000);
         requestFactory.setReadTimeout(5_000);
@@ -27,14 +40,36 @@ public class WeatherClient {
     }
 
     public WeatherResult getWeather() {
+        CachedWeather currentCache = cache;
+        Instant now = Instant.now();
+        LocalDate today = LocalDate.now(TOKYO);
+        if (currentCache != null && currentCache.today().equals(today)
+                && now.isBefore(currentCache.fetchedAt().plusMillis(CACHE_MILLIS))) {
+            return currentCache.result();
+        }
+        synchronized (this) {
+            currentCache = cache;
+            now = Instant.now();
+            today = LocalDate.now(TOKYO);
+            if (currentCache != null && currentCache.today().equals(today)
+                    && now.isBefore(currentCache.fetchedAt().plusMillis(CACHE_MILLIS))) {
+                return currentCache.result();
+            }
+            WeatherResult result = fetchWeather();
+            cache = new CachedWeather(today, now, result);
+            return result;
+        }
+    }
+
+    private WeatherResult fetchWeather() {
         try {
             Map<String, Object> response = restClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .scheme("https")
                             .host("api.open-meteo.com")
                             .path("/v1/forecast")
-                            .queryParam("latitude", 35.68)
-                            .queryParam("longitude", 139.76)
+                            .queryParam("latitude", latitude)
+                            .queryParam("longitude", longitude)
                             .queryParam("daily", "weather_code,temperature_2m_max,temperature_2m_min")
                             .queryParam("forecast_days", 7)
                             .queryParam("timezone", "Asia/Tokyo")
@@ -80,5 +115,8 @@ public class WeatherClient {
     }
 
     public record WeatherResult(List<DailyForecast> forecasts, boolean unavailable) {
+    }
+
+    private record CachedWeather(LocalDate today, Instant fetchedAt, WeatherResult result) {
     }
 }
