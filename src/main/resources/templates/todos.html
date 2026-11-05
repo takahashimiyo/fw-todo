@@ -56,8 +56,12 @@
                             class="priority-marker" th:if="${todo.priority == 1}" aria-label="最優先"> ★</span></td>
                     <td th:text="${todo.dueDate}"></td>
                     <td th:text="${todo.completed ? '完了' + (todo.completedAt != null ? '（' + #temporals.format(todo.completedAt, 'yyyy-MM-dd HH:mm') + '）' : '') : '未完了'}"></td>
-                    <td th:if="${!trash}"><a class="link" th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a> <a class="link"
-                            th:href="@{/todos/{id}/delete(id=${todo.id})}">削除</a></td>
+                    <td class="todo-actions-cell" th:if="${!trash}">
+                        <div class="todo-actions">
+                            <a class="action-btn" th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a>
+                            <a class="action-btn" th:href="@{/todos/{id}/delete(id=${todo.id})}">削除</a>
+                        </div>
+                    </td>
                     <td th:if="${trash}"><form th:action="@{/todos/{id}/restore(id=${todo.id})}" method="post"><button class="btn" type="submit">戻す</button></form></td>
                 </tr>
             </tbody>
