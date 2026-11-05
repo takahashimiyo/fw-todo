@@ -31,7 +31,7 @@ public class CalendarController {
         String selectedView = List.of("day", "week", "month").contains(view) ? view : "month";
         LocalDate today = LocalDate.now(ZoneId.of("Asia/Tokyo"));
         YearMonth currentMonth = YearMonth.from(today);
-        LocalDate focusDate = date != null ? date : LocalDate.of(
+        LocalDate focusDate = date != null ? date : "day".equals(selectedView) ? today : LocalDate.of(
                 year == null ? currentMonth.getYear() : year,
                 month == null ? currentMonth.getMonthValue() : month, 1);
         YearMonth displayedMonth = YearMonth.from(focusDate);

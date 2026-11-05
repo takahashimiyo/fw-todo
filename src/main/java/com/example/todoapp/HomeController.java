@@ -67,7 +67,7 @@ public class HomeController {
     @GetMapping("/todos/genres")
     public String genres(@RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "すべて") String category,
-            @RequestParam(defaultValue = "true") boolean showCompleted, Model model) {
+            @RequestParam(defaultValue = "false") boolean showCompleted, Model model) {
         List<String> standardCategories = List.of("マーケティング", "就職活動", "プログラミング", "デザイン", "資格");
         List<Todo> allTodos = todoService.search("", "", "asc");
 
