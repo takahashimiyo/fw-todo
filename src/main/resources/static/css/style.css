@@ -80,6 +80,7 @@ a { color: var(--green-dark); }
 .todo-table tbody tr:last-child td { border-bottom: 0; }
 .todo-table tbody tr:hover td { background: #fbfdfb; }
 .todo-table tbody tr[data-overdue="true"] td { background: #fff4f1; }
+.overdue-date { color: #c0392b; font-weight: 700; }
 .priority-marker { color: #c47d58; font-weight: bold; }
 .todo-actions-cell { white-space: nowrap; }
 .todo-actions { display: flex; align-items: center; gap: 8px; }
