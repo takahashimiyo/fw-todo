@@ -46,24 +46,43 @@
                      th:classappend="${'genre-tone-' + (iter.index % 5)}">
                 <div class="genre-heading">
                     <h2 th:text="${genre.key}">ジャンル名</h2>
-                    <span class="count-badge"><span th:text="${#lists.size(genre.value)}">0</span>件</span>
+                    <div class="genre-heading-actions">
+                        <span class="count-badge"><span th:text="${#lists.size(genre.value)}">0</span>件</span>
+                        <button class="genre-toggle" type="button" aria-expanded="false"
+                                th:attr="aria-label=${genre.key + 'のタスク一覧を開く'}">▼</button>
+                    </div>
                 </div>
-                <p class="genre-empty" th:if="${#lists.isEmpty(genre.value)}">タスクはありません。</p>
-                <ul class="genre-task-list" th:unless="${#lists.isEmpty(genre.value)}">
-                    <li class="genre-task" th:each="todo : ${genre.value}"
-                        th:classappend="${todo.completed ? ' is-complete' : ''}">
-                        <div class="genre-task-main">
-                            <a class="genre-task-title" th:href="@{/todos/{id}/edit(id=${todo.id})}" th:text="${todo.title}">タスク名</a>
-                            <span class="status-pill" th:classappend="${todo.completed ? ' is-complete' : ''}"
-                                  th:text="${todo.completed ? '完了' : '未完了'}">未完了</span>
-                        </div>
-                        <span class="genre-task-date" th:if="${todo.dueDate != null}"
-                              th:text="${'期限: ' + todo.dueDate}">期限</span>
-                    </li>
-                </ul>
+                <div class="genre-content" hidden>
+                    <p class="genre-empty" th:if="${#lists.isEmpty(genre.value)}">タスクはありません。</p>
+                    <ul class="genre-task-list" th:unless="${#lists.isEmpty(genre.value)}">
+                        <li class="genre-task" th:each="todo : ${genre.value}"
+                            th:classappend="${todo.completed ? ' is-complete' : ''}">
+                            <div class="genre-task-main">
+                                <a class="genre-task-title" th:href="@{/todos/{id}/edit(id=${todo.id})}" th:text="${todo.title}">タスク名</a>
+                                <span class="status-pill" th:classappend="${todo.completed ? ' is-complete' : ''}"
+                                      th:text="${todo.completed ? '完了' : '未完了'}">未完了</span>
+                            </div>
+                            <span class="genre-task-date" th:if="${todo.dueDate != null}"
+                                  th:text="${'期限: ' + todo.dueDate}">期限</span>
+                        </li>
+                    </ul>
+                </div>
             </article>
         </section>
     </main>
 </div>
+<script>
+    document.querySelectorAll('.genre-toggle').forEach((button) => {
+        button.addEventListener('click', () => {
+            const content = button.closest('.genre-card').querySelector('.genre-content');
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+            content.hidden = isExpanded;
+            button.setAttribute('aria-expanded', String(!isExpanded));
+            button.textContent = isExpanded ? '▼' : '▲';
+            button.setAttribute('aria-label', button.getAttribute('aria-label').replace(
+                isExpanded ? '閉じる' : '開く', isExpanded ? '開く' : '閉じる'));
+        });
+    });
+</script>
 </body>
 </html>

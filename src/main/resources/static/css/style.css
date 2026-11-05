@@ -178,6 +178,10 @@ a { color: var(--green-dark); }
 .genre-tone-4 { border-top-color: #cf8290; }
 .genre-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .genre-heading h2 { margin: 0; font-size: 17px; }
+.genre-heading-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; }
+.genre-toggle { display: inline-flex; width: 30px; height: 30px; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--green-dark); cursor: pointer; font-size: 12px; }
+.genre-toggle:hover { background: #f2f7f3; }
+.genre-toggle:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
 .genre-task-list { display: grid; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
 .genre-task { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-radius: 9px; padding: 10px 11px; background: #f7f9f7; }
 .genre-task.is-complete { background: #f2f7f3; }
